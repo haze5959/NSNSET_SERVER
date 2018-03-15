@@ -1,5 +1,7 @@
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
+import userRouter from './userRouter';
+
 
 const app = new Koa();
 app.keys = ['NSNESTOQ123'];  //변조방지 쿠키키
@@ -32,16 +34,9 @@ app.use(async (ctx, next) => {
     }
 });
 
-const router = new Router();
-
-router.get('/', async (ctx) => {
-    ctx.body = 'Hello World!';
-    // ctx.cookies.set('nsnestCookie', 'testOQ', { signed: true });    //maxAge 도 설정가능
-    // ctx.cookies.get('nsnestCookie', { signed: true });
-    // ctx.throw(400, 'name required');
-});
-
-app.use(router.routes());
+const apiRouter = new Router({ prefix: '/api'});
+apiRouter.use('/users', userRouter);
+app.use(apiRouter.routes());
 
 app.listen(3000);
 console.log('===========================');
