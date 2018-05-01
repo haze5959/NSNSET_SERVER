@@ -1,6 +1,8 @@
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
 import userRouter from './userRouter';
+import redis from 'redis';
+import oracleDB from './oracleDB';
 
 
 const app = new Koa();
@@ -33,6 +35,23 @@ app.use(async (ctx, next) => {
         //로깅하기
     }
 });
+
+//오라클 세션 연결=============================
+const db = new oracleDB();
+db.createPool();
+// oracledb.getConnection(dbconfig, (err, connection) => {
+//     if(err){
+//         console.error(err.message);
+//         return;
+//     }
+//     console.log("오라클 커넥션 성공");
+//     oracleConnection = connection;
+// });
+//=========================================
+//Redis 세션 연결============================
+// var client = redis.createClient();
+//var client = redis.createClient(port, host);
+//=========================================
 
 const apiRouter = new Router({ prefix: '/api'});
 apiRouter.use('/users', userRouter);

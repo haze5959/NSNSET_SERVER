@@ -4,7 +4,7 @@
   "description": "nsnest middleware server",
   "main": "index.js",
   "scripts": {
-    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx --exec 'ts-node' ./src/server.ts" 
+    "start": "nodemon --watch 'src/**/*' -e ts,tsx --exec 'ts-node' ./src/server.ts"
   },
   "keywords": [
     "nsnset"
@@ -12,8 +12,12 @@
   "author": "OQ",
   "license": "ISC",
   "dependencies": {
+    "@types/oracledb": "^1.11.34",
+    "@types/redis": "^2.8.6",
     "koa": "^2.5.0",
-    "koa-router": "^7.4.0"
+    "koa-router": "^7.4.0",
+    "oracledb": "^2.2.0",
+    "redis": "^2.8.0"
   },
   "devDependencies": {
     "@types/koa": "^2.0.44",
