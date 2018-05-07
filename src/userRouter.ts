@@ -16,6 +16,9 @@ import oracleDB from './oracleDB';
 
 const router = new Router();
 
+/**
+ * GET
+ */
 router.get('/', async (ctx) => {  
   // ctx.cookies.set('nsnestCookie', 'testOQ', { signed: true });    //maxAge 도 설정가능
   // ctx.cookies.get('nsnestCookie', { signed: true });

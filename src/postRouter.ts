@@ -11,8 +11,7 @@
   title: '게시글을 불러오지 못하였습니다.',
   body: '',
   good: 0,
-  bad: 0,
-  commentId: null
+  bad: 0
 }
 */
 
@@ -22,6 +21,9 @@ import oracleDB from './oracleDB';
 const router = new Router();
 const pageRowNum = 10;
 
+/**
+ * GET
+ */
 router.get('/', async (ctx) => {  
 
   const param = ctx.request.query;
@@ -98,9 +100,115 @@ router.get('/', async (ctx) => {
         console.error("[error] : " + ctx.body);
       });
     }
-}
+  }
+});
 
-  
+/**
+ * POST
+ */
+router.post('/', async (ctx) => {  
+
+  const param = ctx.request.query;
+  const db = new oracleDB();
+  console.log("[ctx.params] : " + JSON.stringify(param));
+  let classify = param.classify;
+  let studentNum = param.studentNum;
+  let publisherId = param.publisherId;
+  let publisherName = param.publisherName;
+  let publisherIntro = param.publisherIntro;
+  let publisherImg = param.publisherImg;
+  let images = param.images;
+  let title = param.title;
+  let body = param.body;
+  let good = param.good;
+  let bad = param.bad;
+  let MARKER = param.MARKER;
+  let TAG = param.TAG;
+  await db.getConnection()
+      .then(con => {
+        return con.execute(`INSERT INTO POSTS 
+        (POST_ID, POST_DATE, POST_CLASSIFY, STUDENT_NUM, PUBLISHER_ID, PUBLISHER_NAME, PUBLISHER_INTRO, PUBLISHER_IMG, IMAGES, TITLE, BODY, GOOD, BAD, MARKER, TAG) 
+        VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :studentNum, :publisherId, :publisherName, :publisherIntro, :publisherImg, :images, :title, :body, :good, :bad, :MARKER, :TAG)`, 
+        { classify: classify, studentNum: studentNum, publisherId: publisherId, publisherName: publisherName, publisherIntro: publisherIntro, publisherImg: publisherImg, images: images, title: title, body: body, good: good, bad: bad, MARKER: MARKER, TAG: TAG })
+        .then(result => {
+          con.release();
+          ctx.body = true;
+        }, err => {
+          con.release();
+          throw err;
+        });
+      }).catch(err => {
+        ctx.body = err.message;
+        console.error("[error] : " + ctx.body);
+      });
+});
+
+/**
+ * PUT
+ */
+router.put('/', async (ctx) => {  
+
+  const param = ctx.request.query;
+  const db = new oracleDB();
+  console.log("[ctx.params] : " + JSON.stringify(param));
+  let postId = param.postId;
+  let classify = param.classify;
+  let studentNum = param.studentNum;
+  let publisherId = param.publisherId;
+  let publisherName = param.publisherName;
+  let publisherIntro = param.publisherIntro;
+  let publisherImg = param.publisherImg;
+  let images = param.images;
+  let title = param.title;
+  let body = param.body;
+  let good = param.good;
+  let bad = param.bad;
+  let MARKER = param.MARKER;
+  let TAG = param.TAG;
+  await db.getConnection()
+      .then(con => {
+        return con.execute(`UPDATE POSTS SET 
+        POST_DATE = SYSDATE, IMAGES = :images, TITLE = :title, BODY = :body, MARKER = :MARKER, TAG = :TAG
+        WHERE POST_ID = :postId`, 
+        { images: images, title: title, body: body, MARKER: MARKER, TAG: TAG, postId: postId })
+        .then(result => {
+          con.release();
+          ctx.body = true;
+        }, err => {
+          con.release();
+          throw err;
+        });
+      }).catch(err => {
+        ctx.body = err.message;
+        console.error("[error] : " + ctx.body);
+      });
+});
+
+/**
+ * DELETE
+ */
+router.delete('/', async (ctx) => {  
+
+  const param = ctx.request.query;
+  const db = new oracleDB();
+  console.log("[ctx.params] : " + JSON.stringify(param));
+  let postId = param.postId;
+
+  await db.getConnection()
+      .then(con => {
+        return con.execute(`DELETE FROM POSTS WHERE POST_ID = :postId`, 
+        { postId: postId })
+        .then(result => {
+          con.release();
+          ctx.body = true;
+        }, err => {
+          con.release();
+          throw err;
+        });
+      }).catch(err => {
+        ctx.body = err.message;
+        console.error("[error] : " + ctx.body);
+      });
 });
 
 export default router.routes();

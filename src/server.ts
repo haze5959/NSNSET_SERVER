@@ -39,14 +39,6 @@ app.use(async (ctx, next) => {
 //오라클 세션 연결=============================
 const db = new oracleDB();
 db.createPool();
-// oracledb.getConnection(dbconfig, (err, connection) => {
-//     if(err){
-//         console.error(err.message);
-//         return;
-//     }
-//     console.log("오라클 커넥션 성공");
-//     oracleConnection = connection;
-// });
 //=========================================
 //Redis 세션 연결============================
 // var client = redis.createClient();
