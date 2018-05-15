@@ -4,7 +4,8 @@
   "description": "nsnest middleware server",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch 'src/**/*' -e ts,tsx --exec 'ts-node' ./src/server.ts"
+    // "start": "nodemon --watch 'src/**/*' -e ts,tsx --exec 'ts-node' ./src/server.ts"
+    "start": "tsx --exec 'ts-node' ./src/server.ts"
   },
   "keywords": [
     "nsnset"
