@@ -103,6 +103,33 @@ router.get('/', async (ctx) => {
   }
 });
 
+router.get('/pageSize', async (ctx) => {  
+
+  const param = ctx.request.query;
+  const db = new oracleDB();
+  console.log("[ctx.params] : " + JSON.stringify(param));
+  await db.getConnection()
+  .then(con => {
+    let classify = param['classify']?param['classify']:0;
+    let queryStr = 'SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify';
+    if (classify == 0) {  //게시글 종류 상관없이 전부
+      queryStr = 'SELECT COUNT(*) FROM POSTS';
+    }
+    return con.execute(queryStr, { classify: classify })
+    .then(result => {
+      ctx.body = result.rows;
+      console.log("[response] : " + ctx.body);
+      con.release();
+    }, err => {
+      con.release();
+      throw err;
+    });
+  }).catch(err => {
+    ctx.body = err.message;
+    console.error("[error] : " + ctx.body);
+  });
+});
+
 /**
  * POST
  */
