@@ -1,6 +1,9 @@
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
 import userRouter from './userRouter';
+import postRouter from './postRouter';
+import commentRouter from './commentRouter';
+import loginRouter from './loginRouter';
 import redis from 'redis';
 import oracleDB from './oracleDB';
 
@@ -47,6 +50,9 @@ db.createPool();
 
 const apiRouter = new Router({ prefix: '/api'});
 apiRouter.use('/users', userRouter);
+apiRouter.use('/posts', postRouter);
+apiRouter.use('/comment', commentRouter);
+apiRouter.use('/login', loginRouter);
 app.use(apiRouter.routes());
 
 app.listen(3000);
