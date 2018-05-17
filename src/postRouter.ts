@@ -48,7 +48,7 @@ router.get('/', async (ctx) => {
     });
   } else {  //모든 게시글 정보 가져오기
     
-    let classify = param['classify']?param['classify']:0;
+    let classify:number = param['classify']?param['classify']:0;
     var sort = param['sort']?param['sort']:'id';
     let order = param['order']?param['order']:'asc';
     let page = param['page']?param['page']:1;
@@ -66,7 +66,7 @@ router.get('/', async (ctx) => {
       let contents = param['contents'];
       await db.getConnection()
       .then(con => {
-        return con.execute('SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY :sort :order OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY', { classify: classify, contents: contents, order: order, sort: sort, offset: offset, maxnumrows: pageRowNum })
+        return con.execute('SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY', { classify: classify, contents: contents, sort: sort, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
           console.log("[response] : " + ctx.body);
@@ -82,12 +82,13 @@ router.get('/', async (ctx) => {
     } else {  //전체 가져오기
       await db.getConnection()
       .then(con => {
-        var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY :sort :order OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+        var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         if (classify == 0) {  //게시글 종류 상관없이 전부
-          queryStr = 'SELECT * FROM POSTS ORDER BY :sort :order OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+          queryStr = 'SELECT * FROM POSTS ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         }
-        console.log("OQ - " + queryStr);
-        return con.execute(queryStr, { classify: classify, order: order, sort: sort, offset: offset, maxnumrows: pageRowNum })
+        console.log("OQ 1- " + queryStr);
+        console.log("OQ 2- " + { classify: classify, sort: sort, offset: offset, maxnumrows: pageRowNum });
+        return con.execute(queryStr, { classify: classify, sort: sort, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
           console.log("[response] : " + ctx.body);
