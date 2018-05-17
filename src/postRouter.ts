@@ -52,10 +52,10 @@ router.get('/', async (ctx) => {
     var sort = param['sort']?param['sort']:'id';
     let order = param['order']?param['order']:'asc';
     let page = param['page']?param['page']:1;
-    let offset = (page - 1) * pageRowNum;
+    let offset:number = (page - 1) * pageRowNum;
 
     if (sort == "id") {  //학번순
-      sort = 'STUDENT_NUM';
+      sort = 'POST_ID';
     } else if(sort == "good") { //좋아요
       sort = 'GOOD';
     } else {  //싫어요
@@ -86,6 +86,7 @@ router.get('/', async (ctx) => {
         if (classify == 0) {  //게시글 종류 상관없이 전부
           queryStr = 'SELECT * FROM POSTS ORDER BY :sort :order OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         }
+        console.log("OQ - " + queryStr);
         return con.execute(queryStr, { classify: classify, order: order, sort: sort, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
