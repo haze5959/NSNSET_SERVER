@@ -14,16 +14,16 @@
   "dependencies": {
     "@types/oracledb": "^1.11.34",
     "@types/redis": "^2.8.6",
-    "koa": "^2.5.0",
+    "koa": "^2.5.1",
     "koa-router": "^7.4.0",
     "oracledb": "^2.2.0",
     "redis": "^2.8.0"
   },
   "devDependencies": {
-    "@types/koa": "^2.0.44",
-    "@types/koa-router": "^7.0.27",
-    "nodemon": "^1.17.1",
+    "@types/koa": "^2.0.45",
+    "@types/koa-router": "^7.0.28",
+    "nodemon": "^1.17.4",
     "ts-node": "^5.0.1",
-    "typescript": "^2.7.2"
+    "typescript": "^2.8.3"
   }
 }
