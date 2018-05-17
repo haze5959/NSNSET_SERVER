@@ -44,7 +44,7 @@ router.get('/', async (ctx) => {
       console.error("[error] : " + ctx.body);
     });
   } else {  //모든 유저 정보 가져오기
-    let sort = param['sort']?param['sort']:'stNum';
+    var sort = param['sort']?param['sort']:'stNum';
     let count = param['count']?param['count']:5;
 
     if (sort == "stNum") {  //학번순

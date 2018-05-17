@@ -35,7 +35,6 @@ app.use(async (ctx, next) => {
             message: err.message
             //에러 페이지
         };
-        //로깅하기
     }
 });
 

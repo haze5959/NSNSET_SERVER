@@ -49,7 +49,7 @@ router.get('/', async (ctx) => {
   } else {  //모든 게시글 정보 가져오기
     
     let classify = param['classify']?param['classify']:0;
-    let sort = param['sort']?param['sort']:'id';
+    var sort = param['sort']?param['sort']:'id';
     let order = param['order']?param['order']:'asc';
     let page = param['page']?param['page']:1;
     let offset = (page - 1) * pageRowNum;
@@ -82,7 +82,7 @@ router.get('/', async (ctx) => {
     } else {  //전체 가져오기
       await db.getConnection()
       .then(con => {
-        let queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY :sort :order OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+        var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY :sort :order OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         if (classify == 0) {  //게시글 종류 상관없이 전부
           queryStr = 'SELECT * FROM POSTS ORDER BY :sort :order OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         }
@@ -111,7 +111,7 @@ router.get('/pageSize', async (ctx) => {
   await db.getConnection()
   .then(con => {
     let classify = param['classify']?param['classify']:0;
-    let queryStr = 'SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify';
+    var queryStr = 'SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify';
     if (classify == 0) {  //게시글 종류 상관없이 전부
       queryStr = 'SELECT COUNT(*) FROM POSTS';
     }
