@@ -17,6 +17,8 @@
 
 import * as Router from 'koa-router';
 import oracleDB from './oracleDB';
+import cognitoJWT from './cognitoJWT';
+import { Oracledb } from 'oracledb';
 
 const router = new Router();
 const pageRowNum = 10;
@@ -25,8 +27,12 @@ const pageRowNum = 10;
  * GET
  */
 router.get('/', async (ctx) => {  
-
   const param = ctx.request.query;
+  if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+    ctx.body = "토큰 검증 실패";
+    return false;
+  } 
+  
   const db = new oracleDB();
   console.log("[ctx.params] : " + JSON.stringify(param));
   if(param['postId']){ //해당 게시글 아이디에 해당하는 게시글 정보 가져오기
@@ -66,7 +72,7 @@ router.get('/', async (ctx) => {
       let contents = param['contents'];
       await db.getConnection()
       .then(con => {
-        return con.execute('SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY', { classify: classify, contents: contents, sort: sort, offset: offset, maxnumrows: pageRowNum })
+        return con.execute('BEGIN SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY; END;', { classify: classify, contents: contents, sort: sort, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
           console.log("[response] : " + ctx.body);
@@ -82,9 +88,9 @@ router.get('/', async (ctx) => {
     } else {  //전체 가져오기
       await db.getConnection()
       .then(con => {
-        var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+        var queryStr = 'BEGIN SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY; END;';
         if (classify == 0) {  //게시글 종류 상관없이 전부
-          queryStr = 'SELECT * FROM POSTS ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+          queryStr = 'BEGIN SELECT * FROM POSTS ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY; END;';
         }
         console.log("OQ 1- " + queryStr);
         console.log("OQ 2- " + { classify: classify, sort: sort, offset: offset, maxnumrows: pageRowNum });
@@ -136,8 +142,12 @@ router.get('/pageSize', async (ctx) => {
  * POST
  */
 router.post('/', async (ctx) => {  
-
   const param = ctx.request.query;
+  if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+    ctx.body = "토큰 검증 실패";
+    return false;
+  } 
+
   const db = new oracleDB();
   console.log("[ctx.params] : " + JSON.stringify(param));
   let classify = param.classify;
@@ -176,8 +186,12 @@ router.post('/', async (ctx) => {
  * PUT
  */
 router.put('/', async (ctx) => {  
-
   const param = ctx.request.query;
+  if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+    ctx.body = "토큰 검증 실패";
+    return false;
+  } 
+
   const db = new oracleDB();
   console.log("[ctx.params] : " + JSON.stringify(param));
   let postId = param.postId;
@@ -217,8 +231,12 @@ router.put('/', async (ctx) => {
  * DELETE
  */
 router.delete('/', async (ctx) => {  
-
   const param = ctx.request.query;
+  if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+    ctx.body = "토큰 검증 실패";
+    return false;
+  } 
+  
   const db = new oracleDB();
   console.log("[ctx.params] : " + JSON.stringify(param));
   let postId = param.postId;

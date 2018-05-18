@@ -1,4 +1,4 @@
-import * as oracledb from 'oracledb';
+import oracledb from 'oracledb';
 
 const dbconfig: oracledb.IConnectionAttributes =  {
     user          : "c##haze5959",
@@ -22,6 +22,7 @@ export default class Database {
     }
 
     public getConnection() {
+        oracledb.fetchAsString = [ oracledb.DATE, oracledb.CLOB ];
         return oracledb.getConnection();
     }    
 }
