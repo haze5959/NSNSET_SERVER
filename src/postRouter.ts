@@ -89,10 +89,12 @@ router.get('/', async (ctx) => {
       await db.getConnection()
       .then(con => {
         var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY 1 ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+        var queryJson = { classify: classify, offset: offset, maxnumrows: pageRowNum };
         if (classify == 0) {  //게시글 종류 상관없이 전부
           queryStr = 'SELECT * FROM POSTS ORDER BY 1 ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+          delete queryJson['classify'];
         }
-        return con.execute(queryStr, { classify: classify, offset: offset, maxnumrows: pageRowNum })
+        return con.execute(queryStr, queryJson)
         .then(result => {
           ctx.body = result.rows;
           console.log("[response] : " + ctx.body);
@@ -118,10 +120,12 @@ router.get('/pageSize', async (ctx) => {
   .then(con => {
     let classify = param['classify']?param['classify']:0;
     var queryStr = 'SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify';
+    var queryJson = { classify: classify };
     if (classify == 0) {  //게시글 종류 상관없이 전부
       queryStr = 'SELECT COUNT(*) FROM POSTS';
+      delete queryJson['classify'];
     }
-    return con.execute(queryStr, { classify: classify })
+    return con.execute(queryStr, queryJson)
     .then(result => {
       ctx.body = result.rows;
       console.log("[response] : " + ctx.body);
