@@ -7,7 +7,8 @@ import { relative } from 'path';
 const userPool_Id = "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_PzeoW49Lp";
 
 export default class cognitoJWT {
-  static check(userToken:string){
+  static check(userToken:string): boolean{
+    var result:boolean = false;
     const pems = {};
     for(let i = 0; i<jwt_set.keys.length; i++){
       const jwk = {
@@ -24,13 +25,15 @@ export default class cognitoJWT {
 
     this.ValidateToken(pems, userToken)
     .then((data)=>{
-      console.log("[ValidateToken] success : " + data);
-      return true;  //성공
+      console.log("[ValidateToken] success : " + JSON.stringify(data));
+      result = true;  //성공
     })
     .catch((err)=>{
-      console.log("[ValidateToken] err : " + err);
-      return false; //실패
-    })
+      console.log("[ValidateToken] err : " + JSON.stringify(err));
+      result = false; //실패
+    });
+
+    return result;
   }
 
 
