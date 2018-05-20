@@ -93,8 +93,8 @@ router.get('/', async (ctx) => {
           queryStr = 'SELECT * FROM POSTS ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         }
         console.log("OQ 1- " + queryStr);
-        console.log("OQ 2- " + { classify: classify, sort: sort, offset: offset, maxnumrows: pageRowNum });
-        return con.execute(queryStr, { classify: classify, sort: sort, offset: offset, maxnumrows: pageRowNum })
+        console.log("OQ 2- " + JSON.stringify({ classify: classify, sort: sort, offset: offset, maxnumrows: pageRowNum }));
+        return con.execute(queryStr, { classify: classify, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
           console.log("[response] : " + ctx.body);
