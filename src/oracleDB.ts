@@ -1,4 +1,4 @@
-import oracledb from 'oracledb';
+import * as oracledb from 'oracledb';
 
 const dbconfig: oracledb.IConnectionAttributes =  {
     user          : "c##haze5959",
@@ -12,7 +12,6 @@ export default class Database {
     }
 
     public createPool(): void {
-        oracledb.fetchAsString = [ oracledb.DATE, oracledb.CLOB ];
         oracledb.createPool(dbconfig).then(conpool => {
                 this.pool = conpool;
                 console.log('Connection Pool created!');
@@ -23,7 +22,8 @@ export default class Database {
     }
 
     public getConnection() {
-        oracledb.fetchAsString = [ oracledb.DATE, oracledb.CLOB ];
+        oracledb.fetchAsString.push(oracledb.DATE);
+        oracledb.fetchAsString.push(oracledb.CLOB);
         return oracledb.getConnection();
     }    
 }
