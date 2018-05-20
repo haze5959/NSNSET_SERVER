@@ -24,11 +24,11 @@ export default class cognitoJWT {
 
     this.ValidateToken(pems, userToken)
     .then((data)=>{
-      console.log(data)
+      console.log("[ValidateToken] success : " + data);
       return true;  //성공
     })
     .catch((err)=>{
-      console.log(err)
+      console.log("[ValidateToken] err : " + err);
       return false; //실패
     })
   }
@@ -68,11 +68,11 @@ export default class cognitoJWT {
       // verify the signature of the JWT token to ensure its really coming from your User Pool
       jwt.verify(jwtToken, pem, {issuer: userPool_Id}, function(err, payload){
         if(err){
-        console.log("Unauthorized signature for this JWT Token")
-        rej("Unauthorized signature for this JWT Token")
+          console.log("Unauthorized signature for this JWT Token")
+          rej("Unauthorized signature for this JWT Token")
         }else{
-        // if payload exists, then the token is verified!
-        res(payload)
+          // if payload exists, then the token is verified!
+          res(payload)
         }
       })
     });
