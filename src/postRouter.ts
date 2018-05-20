@@ -144,7 +144,6 @@ router.get('/pageSize', async (ctx) => {
  * POST
  */
 router.post('/', async (ctx) => {  
-  console.log("[ctx.body] : " + JSON.stringify(this.request.body));
   const param = ctx.body;
   console.log("[ctx.params] : " + JSON.stringify(param));
   
