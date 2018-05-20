@@ -7,8 +7,7 @@ import { relative } from 'path';
 const userPool_Id = "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_PzeoW49Lp";
 
 export default class cognitoJWT {
-  static check(userToken:string){
-    var result:boolean = false;
+  static check(userToken:string): boolean{
     const pems = {};
     for(let i = 0; i<jwt_set.keys.length; i++){
       const jwk = {
