@@ -161,16 +161,14 @@ router.post('/', async (ctx) => {
   let images = param.images;
   let title = param.title;
   let body = param.body;
-  let good = param.good;
-  let bad = param.bad;
   let MARKER = param.MARKER;
   let TAG = param.TAG;
   await db.getConnection()
       .then(con => {
         return con.execute(`INSERT INTO POSTS 
-        (POST_ID, POST_DATE, POST_CLASSIFY, STUDENT_NUM, PUBLISHER_ID, PUBLISHER_NAME, PUBLISHER_INTRO, PUBLISHER_IMG, IMAGES, TITLE, BODY, GOOD, BAD, MARKER, TAG) 
-        VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :studentNum, :publisherId, :publisherName, :publisherIntro, :publisherImg, :images, :title, :body, :good, :bad, :MARKER, :TAG)`, 
-        { classify: classify, studentNum: studentNum, publisherId: publisherId, publisherName: publisherName, publisherIntro: publisherIntro, publisherImg: publisherImg, images: images, title: title, body: body, good: good, bad: bad, MARKER: MARKER, TAG: TAG })
+        (POST_ID, POST_DATE, POST_CLASSIFY, STUDENT_NUM, PUBLISHER_ID, PUBLISHER_NAME, PUBLISHER_INTRO, PUBLISHER_IMG, IMAGES, TITLE, BODY, MARKER, TAG) 
+        VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :studentNum, :publisherId, :publisherName, :publisherIntro, :publisherImg, :images, :title, :body, :MARKER, :TAG)`, 
+        { classify: classify, studentNum: studentNum, publisherId: publisherId, publisherName: publisherName, publisherIntro: publisherIntro, publisherImg: publisherImg, images: images, title: title, body: body, MARKER: MARKER, TAG: TAG })
         .then(result => {
           con.release();
           ctx.body = true;
