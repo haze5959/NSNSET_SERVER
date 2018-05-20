@@ -12,6 +12,7 @@ export default class Database {
     }
 
     public createPool(): void {
+        oracledb.fetchAsString = [ oracledb.DATE, oracledb.CLOB ];
         oracledb.createPool(dbconfig).then(conpool => {
                 this.pool = conpool;
                 console.log('Connection Pool created!');
