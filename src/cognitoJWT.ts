@@ -7,7 +7,7 @@ import { relative } from 'path';
 const userPool_Id = "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_PzeoW49Lp";
 
 export default class cognitoJWT {
-  static check(userToken:string): boolean{
+  static check(userToken:string){
     var result:boolean = false;
     const pems = {};
     for(let i = 0; i<jwt_set.keys.length; i++){
@@ -23,40 +23,25 @@ export default class cognitoJWT {
       pems[jwt_set.keys[i].kid] = pem;
     }
 
-    this.ValidateToken(pems, userToken)
-    .then((data)=>{
-      console.log("[ValidateToken] success : " + JSON.stringify(data));
-      result = true;  //성공
-    })
-    .catch((err)=>{
-      console.log("[ValidateToken] err : " + JSON.stringify(err));
-      result = false; //실패
-    });
-
-    return result;
+    return this.ValidateToken(pems, userToken);
   }
 
-
   static ValidateToken(pems, jwtToken:string){
-    const p = new Promise((res, rej)=>{
       const decodedJWT = jwt.decode(jwtToken, {complete: true});
       // reject if its not a valid JWT token
       if(!decodedJWT){
-        console.log("Not a valid JWT token");
-        rej("Not a valid JWT token");
+        console.log("[ValidateToken] err : Not a valid JWT token");
+        return false;
       }
       // reject if ISS is not matching our userPool Id
       if(decodedJWT['payload']['iss'] != userPool_Id){
-        console.log("invalid issuer")
-        rej({
-        message: "invalid issuer",
-        iss: decodedJWT['payload']
-        })
+        console.log("[ValidateToken] err : invalid issuer, iss: " + decodedJWT['payload'])
+        return false;
       }
       // Reject the jwt if it's not an 'Access Token'
       if (decodedJWT['payload']['token_use'] != 'access') {
-            console.log("Not an access token")
-            rej("Not an access token")
+            console.log("[ValidateToken] err : Not an access token")
+            return false;
         }
           // Get jwtToken `kid` from header
       const kid = decodedJWT['header']['kid'];
@@ -64,21 +49,20 @@ export default class cognitoJWT {
       const pem = pems[kid];
       // if there is no matching pem for this `kid`, reject the token
       if(!pem){
-        console.log('Invalid access token')
-        rej('Invalid access token')
+        console.log('[ValidateToken] err : Invalid access token')
+        return false;
       }
-      console.log("Decoding the JWT with PEM!")
+
       // verify the signature of the JWT token to ensure its really coming from your User Pool
       jwt.verify(jwtToken, pem, {issuer: userPool_Id}, function(err, payload){
         if(err){
           console.log("Unauthorized signature for this JWT Token")
-          rej("Unauthorized signature for this JWT Token")
+          return false;
         }else{
           // if payload exists, then the token is verified!
-          res(payload)
+          console.log("[ValidateToken] success : " + JSON.stringify(payload));
+          return true;
         }
       })
-    });
-    return p
    }
 }
