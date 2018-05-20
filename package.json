@@ -13,11 +13,13 @@
   "license": "ISC",
   "dependencies": {
     "@types/jsonwebtoken": "^7.2.7",
+    "@types/koa-bodyparser": "^4.2.0",
     "@types/oracledb": "^1.11.34",
     "@types/redis": "^2.8.6",
     "jsonwebtoken": "^8.2.1",
     "jwk-to-pem": "^2.0.0",
     "koa": "^2.5.1",
+    "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.4.0",
     "oracledb": "^2.2.0",
     "redis": "^2.8.0"

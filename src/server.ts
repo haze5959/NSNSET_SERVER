@@ -1,5 +1,6 @@
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
+import bodyParser from 'koa-bodyparser';
 import userRouter from './userRouter';
 import postRouter from './postRouter';
 import commentRouter from './commentRouter';
@@ -14,8 +15,11 @@ app.context.db = {  //서버쪽 프로퍼티
     "version": "1.0.0"
 };
 
+app.use(bodyParser());
+
 app.use(async (ctx, next) => {
     try {
+        ctx.body = ctx.request.body;
         console.log('[request Url] : ' + ctx.url + " / [request Method] : " + ctx.method);
         // console.log(ctx.db.version);
         

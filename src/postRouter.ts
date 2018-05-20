@@ -30,6 +30,7 @@ router.get('/', async (ctx) => {
   const param = ctx.request.query;
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     ctx.body = "토큰 검증 실패";
+    ctx.redirect('/');
     return false;
   } 
   
@@ -144,8 +145,10 @@ router.get('/pageSize', async (ctx) => {
  * POST
  */
 router.post('/', async (ctx) => {  
-  const param = ctx.params;
+  console.log("[ctx.params] : " + JSON.stringify(ctx.body));
+  const param = ctx.body;
   console.log("[ctx.params] : " + JSON.stringify(param));
+  console.log("[ctx.query] : " + JSON.stringify(ctx.request.query));
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     ctx.body = "토큰 검증 실패";
