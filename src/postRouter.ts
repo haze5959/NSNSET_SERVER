@@ -90,11 +90,9 @@ router.get('/', async (ctx) => {
       .then(con => {
         var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY 1 ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         if (classify == 0) {  //게시글 종류 상관없이 전부
-          queryStr = 'SELECT * FROM POSTS ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+          queryStr = 'SELECT * FROM POSTS ORDER BY 1 ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         }
-        console.log("OQ 1- " + queryStr);
-        console.log("OQ 2- " + { classify: classify, offset: offset, maxnumrows: pageRowNum });
-        return con.execute(queryStr, { classify: classify, sort: sort, offset: offset, maxnumrows: pageRowNum })
+        return con.execute(queryStr, { classify: classify, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
           console.log("[response] : " + ctx.body);
