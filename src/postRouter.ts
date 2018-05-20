@@ -145,24 +145,31 @@ router.get('/pageSize', async (ctx) => {
  */
 router.post('/', async (ctx) => {  
   const param = ctx.request.query;
+  console.log("[ctx.params] : " + JSON.stringify(param));
+  
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     ctx.body = "토큰 검증 실패";
     return false;
   } 
+  const payload = param['payload'];
 
+  if(!payload){
+    ctx.body = "페이로드가 없습니다.";
+    return false;
+  }
+
+  let classify = payload.classify;
+  let studentNum = payload.studentNum;
+  let publisherId = payload.publisherId;
+  let publisherName = payload.publisherName;
+  let publisherIntro = payload.publisherIntro;
+  let publisherImg = payload.publisherImg;
+  let images = payload.images;
+  let title = payload.title;
+  let body = payload.body;
+  let MARKER = payload.MARKER;
+  let TAG = payload.TAG;
   const db = new oracleDB();
-  console.log("[ctx.params] : " + JSON.stringify(param));
-  let classify = param.classify;
-  let studentNum = param.studentNum;
-  let publisherId = param.publisherId;
-  let publisherName = param.publisherName;
-  let publisherIntro = param.publisherIntro;
-  let publisherImg = param.publisherImg;
-  let images = param.images;
-  let title = param.title;
-  let body = param.body;
-  let MARKER = param.MARKER;
-  let TAG = param.TAG;
   await db.getConnection()
       .then(con => {
         return con.execute(`INSERT INTO POSTS 
