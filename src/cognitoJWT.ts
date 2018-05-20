@@ -7,7 +7,7 @@ import { relative } from 'path';
 const userPool_Id = "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_PzeoW49Lp";
 
 export default class cognitoJWT {
-  static check(userToken:string): boolean{
+  check(userToken:string): boolean{
     const pems = {};
     for(let i = 0; i<jwt_set.keys.length; i++){
       const jwk = {
@@ -27,7 +27,7 @@ export default class cognitoJWT {
     return result;
   }
 
-  static ValidateToken(pems, jwtToken:string): boolean{
+  ValidateToken(pems, jwtToken:string): boolean{
     const decodedJWT = jwt.decode(jwtToken, {complete: true});
     // reject if its not a valid JWT token
     if(!decodedJWT){
