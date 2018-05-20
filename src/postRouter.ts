@@ -28,9 +28,7 @@ const pageRowNum = 10;
  */
 router.get('/', async (ctx) => {  
   const param = ctx.request.query;
-  let validation:Boolean = cognitoJWT.check(param['accessToken']?param['accessToken']:'');
-  console.log("OQOQO => " + validation);
-  if(!validation){  //토큰 검증 실패
+  if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     ctx.body = "토큰 검증 실패";
     return false;
   } 

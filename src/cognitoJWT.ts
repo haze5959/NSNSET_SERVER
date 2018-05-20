@@ -21,10 +21,8 @@ export default class cognitoJWT {
       // append PEM to the pems object, with the kid as the identifier
       pems[jwt_set.keys[i].kid] = pem;
     }
-
-    let result:Boolean = this.ValidateToken(pems, userToken);
-    console.log("OQOQ 11 : " + result);
-    return result;
+    
+    return this.ValidateToken(pems, userToken);
   }
 
   static ValidateToken(pems, jwtToken:string): Boolean{
@@ -54,16 +52,19 @@ export default class cognitoJWT {
       return false;
     }
 
+    var result:Boolean = false;
     // verify the signature of the JWT token to ensure its really coming from your User Pool
     jwt.verify(jwtToken, pem, {issuer: userPool_Id}, function(err, payload){
       if(err){
         console.log("Unauthorized signature for this JWT Token")
-        return false;
+        result = false;
       }else{
         // if payload exists, then the token is verified!
         console.log("[ValidateToken] success : " + JSON.stringify(payload));
-        return false;
+        result = true;
       }
-    })
+    });
+
+    return result;
   }
 }
