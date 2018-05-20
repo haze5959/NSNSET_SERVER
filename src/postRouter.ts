@@ -171,13 +171,19 @@ router.post('/', async (ctx) => {
         { classify: classify, studentNum: studentNum, publisherId: publisherId, publisherName: publisherName, publisherIntro: publisherIntro, publisherImg: publisherImg, images: images, title: title, body: body, MARKER: MARKER, TAG: TAG })
         .then(result => {
           con.release();
-          ctx.body = true;
+          ctx.body = {result: true};
         }, err => {
           con.release();
-          throw err;
+          ctx.body = {
+            result: false,
+            message: err.message
+          };
         });
       }).catch(err => {
-        ctx.body = err.message;
+        ctx.body = {
+          result: false,
+          message: err.message
+        };
         console.error("[error] : " + ctx.body);
       });
 });
