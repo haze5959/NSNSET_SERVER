@@ -72,7 +72,7 @@ router.get('/', async (ctx) => {
       let contents = param['contents'];
       await db.getConnection()
       .then(con => {
-        return con.execute('BEGIN SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY; END;', { classify: classify, contents: contents, sort: sort, offset: offset, maxnumrows: pageRowNum })
+        return con.execute('SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY', { classify: classify, contents: contents, sort: sort, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
           console.log("[response] : " + ctx.body);
@@ -88,9 +88,9 @@ router.get('/', async (ctx) => {
     } else {  //전체 가져오기
       await db.getConnection()
       .then(con => {
-        var queryStr = 'BEGIN SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY; END;';
+        var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         if (classify == 0) {  //게시글 종류 상관없이 전부
-          queryStr = 'BEGIN SELECT * FROM POSTS ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY; END;';
+          queryStr = 'SELECT * FROM POSTS ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         }
         console.log("OQ 1- " + queryStr);
         console.log("OQ 2- " + { classify: classify, sort: sort, offset: offset, maxnumrows: pageRowNum });

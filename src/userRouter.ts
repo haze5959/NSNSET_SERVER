@@ -55,7 +55,7 @@ router.get('/', async (ctx) => {
 
     await db.getConnection()
     .then(con => {
-      return con.execute('BEGIN SELECT * FROM USERS ORDER BY :sort desc; END;', {sort: sort}, { maxRows: count })
+      return con.execute('SELECT * FROM USERS ORDER BY :sort desc', {sort: sort}, { maxRows: count })
       .then(result => {
         ctx.body = result.rows;
         console.log("[response] : " + ctx.body);
