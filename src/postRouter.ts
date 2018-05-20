@@ -28,8 +28,7 @@ const pageRowNum = 10;
  */
 router.get('/', async (ctx) => {  
   const param = ctx.request.query;
-  let congito = new cognitoJWT();
-  let validation:boolean = congito.check(param['accessToken']?param['accessToken']:'');
+  let validation:Boolean = cognitoJWT.check(param['accessToken']?param['accessToken']:'');
   console.log("OQOQO => " + validation);
   if(!validation){  //토큰 검증 실패
     ctx.body = "토큰 검증 실패";
@@ -146,8 +145,7 @@ router.get('/pageSize', async (ctx) => {
  */
 router.post('/', async (ctx) => {  
   const param = ctx.request.query;
-  let congito = new cognitoJWT();
-  if(!congito.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+  if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     ctx.body = "토큰 검증 실패";
     return false;
   } 
@@ -191,8 +189,7 @@ router.post('/', async (ctx) => {
  */
 router.put('/', async (ctx) => {  
   const param = ctx.request.query;
-  let congito = new cognitoJWT();
-  if(!congito.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+  if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     ctx.body = "토큰 검증 실패";
     return false;
   } 
@@ -237,8 +234,7 @@ router.put('/', async (ctx) => {
  */
 router.delete('/', async (ctx) => {  
   const param = ctx.request.query;
-  let congito = new cognitoJWT();
-  if(!congito.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+  if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     ctx.body = "토큰 검증 실패";
     return false;
   } 
