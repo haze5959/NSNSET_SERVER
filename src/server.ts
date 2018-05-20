@@ -16,9 +16,9 @@ app.context.db = {  //서버쪽 프로퍼티
 
 app.use(async (ctx, next) => {
     try {
-        console.log('[request Url] : ' + ctx.url);
+        console.log('[request Url] : ' + ctx.url + " / [request Method] : " + ctx.method);
         // console.log(ctx.db.version);
-
+        
         switch (ctx.accepts('json', 'text')) {
             case 'json': 
                 console.log('[request json] : ' + ctx.body);
