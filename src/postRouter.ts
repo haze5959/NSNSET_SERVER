@@ -144,7 +144,8 @@ router.get('/pageSize', async (ctx) => {
  * POST
  */
 router.post('/', async (ctx) => {  
-  const param = ctx.request.query;
+  console.log("[ctx.body] : " + JSON.stringify(this.request.body));
+  const param = ctx.body;
   console.log("[ctx.params] : " + JSON.stringify(param));
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
