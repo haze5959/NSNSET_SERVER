@@ -178,15 +178,13 @@ router.post('/', async (ctx) => {
         VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :studentNum, :publisherId, :publisherName, :publisherIntro, :publisherImg, :images, :title, :body, :MARKER, :TAG)`, 
         { classify: classify, studentNum: studentNum, publisherId: publisherId, publisherName: publisherName, publisherIntro: publisherIntro, publisherImg: publisherImg, images: images, title: title, body: body, MARKER: MARKER, TAG: TAG })
         .then(result => {
-          console.log("[response] : " + result);
-          console.log("[response] : " + result.rows);
+          console.log("[response] : " + JSON.stringify(result));
           con.release();
           ctx.body = {
             result: true,
             message: result
           };
         }, err => {
-          console.log("[error] : " + err);
           console.log("[error] : " + err.message);
           con.release();
           ctx.body = {
