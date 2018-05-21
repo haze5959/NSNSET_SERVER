@@ -15,7 +15,11 @@ app.context.db = {  //서버쪽 프로퍼티
     "version": "1.0.0"
 };
 
-app.use(bodyParser());
+app.use(bodyParser({
+    onerror: function (err, ctx) {
+      ctx.throw('body parse error', 422);
+    }
+}));
 
 app.use(async (ctx, next) => {
     try {
