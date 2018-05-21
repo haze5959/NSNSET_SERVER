@@ -1,6 +1,6 @@
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
-import bodyParser from 'koa-bodyparser';
+import * as bodyParser from 'koa-bodyparser';
 import userRouter from './userRouter';
 import postRouter from './postRouter';
 import commentRouter from './commentRouter';

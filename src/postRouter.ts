@@ -145,10 +145,8 @@ router.get('/pageSize', async (ctx) => {
  * POST
  */
 router.post('/', async (ctx) => {  
-  console.log("[ctx.params] : " + JSON.stringify(ctx.body));
   const param = ctx.body;
   console.log("[ctx.params] : " + JSON.stringify(param));
-  console.log("[ctx.query] : " + JSON.stringify(ctx.request.query));
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     ctx.body = "토큰 검증 실패";
@@ -161,7 +159,7 @@ router.post('/', async (ctx) => {
     return false;
   }
 
-  let classify = payload.classify;
+  let classify = payload.postClassify;
   let studentNum = payload.studentNum;
   let publisherId = payload.publisherId;
   let publisherName = payload.publisherName;
