@@ -162,14 +162,14 @@ router.post('/', async (ctx) => {
   let classify = payload.postClassify;
   let studentNum = payload.studentNum;
   let publisherId = payload.publisherId;
-  let publisherName = payload.publisherName;
-  let publisherIntro = payload.publisherIntro;
-  let publisherImg = payload.publisherImg;
-  let images = payload.images;
+  let publisherName = payload.publisher;
+  let publisherIntro = payload.publisherIntro?payload.publisherIntro:"";
+  let publisherImg = payload.publisherImg?payload.publisherImg:"";
+  let images = payload.images?payload.images:"";
   let title = payload.title;
-  let body = payload.body;
-  let MARKER = payload.MARKER;
-  let TAG = payload.TAG;
+  let body = payload.body?payload.body:"";
+  let MARKER = payload.MARKER?payload.MARKER:"";
+  let TAG = payload.TAG?payload.TAG:"";
   const db = new oracleDB();
   await db.getConnection()
       .then(con => {
@@ -179,7 +179,10 @@ router.post('/', async (ctx) => {
         { classify: classify, studentNum: studentNum, publisherId: publisherId, publisherName: publisherName, publisherIntro: publisherIntro, publisherImg: publisherImg, images: images, title: title, body: body, MARKER: MARKER, TAG: TAG })
         .then(result => {
           con.release();
-          ctx.body = {result: true};
+          ctx.body = {
+            result: true,
+            message: result
+          };
         }, err => {
           con.release();
           ctx.body = {
