@@ -1,14 +1,14 @@
-import oracledb from 'oracledb';
+import oracledbType from 'oracledb';
 var Oracledb = require('oracledb');
 
-const dbconfig: oracledb.IConnectionAttributes =  {
+const dbconfig: oracledbType.IConnectionAttributes =  {
     user          : "c##haze5959",
     password      : "Fkdhsgkwp12#",
     connectString : "192.168.0.2/orcl"
 };
 
 export default class Database {
-    private pool: oracledb.IConnectionPool;    
+    private pool: oracledbType.IConnectionPool;    
     constructor() {  
     }
 
@@ -16,8 +16,7 @@ export default class Database {
         
         Oracledb.createPool(dbconfig).then(conpool => {
                 this.pool = conpool;
-                Oracledb.fetchAsString.push(oracledb.DATE);
-                Oracledb.fetchAsString.push(oracledb.CLOB);
+                Oracledb.fetchAsString  = [ Oracledb.DATE, Oracledb.CLOB ];
                 Oracledb.autoCommit = true;
                 console.log('Connection Pool created!');
             },
