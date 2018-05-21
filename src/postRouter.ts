@@ -99,8 +99,10 @@ router.get('/', async (ctx) => {
         .then(result => {
           ctx.body = result.rows;
           console.log("[response] : " + ctx.body);
+          con.commit();
           con.release();
         }, err => {
+          con.rollback();
           con.release();
           throw err;
         });
