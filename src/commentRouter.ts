@@ -77,10 +77,10 @@ router.post('/', async (ctx) => {
       .then(con => {
         return con.execute(`INSERT INTO COMMENTS 
         (COMMENT_BODY, COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, POST_ID, GOOD) 
-        VALUES ('test test', SEQ_ID.NEXTVAL, SYSDATE, 1000, 1000, 'tester', '', '', 1000, 0)`, 
+        VALUES (:comment, SEQ_ID.NEXTVAL, SYSDATE, 0, :userId, 'testser', '', :emoticon, :postId, 0)`, 
         // (COMMENT_ID, COMMENT_DATE, USER_ID, EMOTICON, COMMENT_BODY, POST_ID) 
         // { userId: userId, emoticon: emoticon, comment: comment, postId: postId })
-        {})
+        { comment: comment, userId: userId, emoticon: emoticon, postId: postId })
         .then(result => {
           console.log("[response1] : " + JSON.stringify(result));
           // ctx.body = {
