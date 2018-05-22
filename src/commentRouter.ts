@@ -68,7 +68,7 @@ router.post('/', async (ctx) => {
   let userId = payload.userId;
   // let userName = payload.userName;
   // let userImg = payload.userImg;
-  let emoticon = payload.emoticon;
+  let emoticon:string = payload.emoticon;
   let comment = payload.comment;
 
   const db = new oracleDB();
@@ -77,7 +77,7 @@ router.post('/', async (ctx) => {
         return con.execute(`INSERT INTO COMMENTS 
         (COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, GOOD, COMMENT_BODY, POST_ID) 
         VALUES (SEQ_ID.NEXTVAL, SYSDATE, :studentNum, :userId, :userName, :userImg, :emoticon, :good, :comment, :postId)`, 
-        { studentNum: 1000, userName: '이 테이블에 저장안할거임', userImg: '', emoticon: emoticon, good: 0, comment: comment, postId: postId })
+        { studentNum: 1000, userId: userId, userName: '이 테이블에 저장안할거임', userImg: '', emoticon: emoticon, good: 0, comment: comment, postId: postId })
         .then(result => {
           console.log("[response1] : " + JSON.stringify(result));
           ctx.body = {
@@ -92,7 +92,7 @@ router.post('/', async (ctx) => {
         }).then(() => { //게시글 댓글 수 올리기
           con.execute(`UPDATE POSTS SET 
           COMMENT_COUNT = SEQ_ID.NEXTVAL
-          WHERE POST_ID = :postId`, {postId: postId})
+          WHERE POST_ID = :postId`, { postId: postId })
           .then(result => {
             console.log("[response2] : " + JSON.stringify(result));
             con.release();
