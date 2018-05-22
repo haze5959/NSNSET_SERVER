@@ -77,7 +77,7 @@ router.post('/', async (ctx) => {
         return con.execute(`INSERT INTO COMMENTS 
         (COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, GOOD, COMMENT_BODY, POST_ID) 
         VALUES (SEQ_ID.NEXTVAL, SYSDATE, :studentNum, :userId, :userName, :userImg, :emoticon, :good, :comment, :postId)`, 
-        { studentNum: 1000, userId: userId, userName: '이 테이블에 저장안할거임', userImg: '', emoticon: emoticon, good: 0, comment: comment, postId: postId })
+        { studentNum: '1000', userId: userId, userName: '이 테이블에 저장안할거임', userImg: '', emoticon: emoticon, good: '0', comment: comment, postId: postId })
         .then(result => {
           console.log("[response1] : " + JSON.stringify(result));
           ctx.body = {
