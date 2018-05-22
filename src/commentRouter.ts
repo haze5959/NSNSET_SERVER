@@ -26,10 +26,10 @@ router.get('/', async (ctx) => {
   // ctx.cookies.get('nsnestCookie', { signed: true });
   // ctx.throw(400, 'name required');
   const param = ctx.request.query;
-  const db = new oracleDB();
   console.log("[ctx.params] : " + JSON.stringify(param));
-
   let postId = param['postId'];
+
+  const db = new oracleDB();
   await db.getConnection()
   .then(con => {
     return con.execute('SELECT * FROM COMMENTS WHERE POST_ID = :postId', {postId: postId})
@@ -54,33 +54,63 @@ router.get('/', async (ctx) => {
  */
 router.post('/', async (ctx) => {  
 
-  const param = ctx.request.query;
-  const db = new oracleDB();
+  const param = ctx.body;
   console.log("[ctx.params] : " + JSON.stringify(param));
-  let postId = param.postId;
-  let studentNum = param.studentNum;
-  let userId = param.userId;
-  let userName = param.userName;
-  let userImg = param.userImg;
-  let emoticon = param.emoticon;
-  let comment = param.comment;
-  let good = param.good;
+  const payload = param['payload'];
 
+  if(!payload){
+    ctx.body = "페이로드가 없습니다.";
+    return false;
+  }
+
+  let postId = payload.postId;
+  // let studentNum = payload.studentNum;
+  let userId = payload.userId;
+  // let userName = payload.userName;
+  // let userImg = payload.userImg;
+  let emoticon = payload.emoticon;
+  let comment = payload.comment;
+
+  const db = new oracleDB();
   await db.getConnection()
       .then(con => {
         return con.execute(`INSERT INTO COMMENTS 
         (COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, GOOD, COMMENT_BODY, POST_ID) 
         VALUES (SEQ_ID.NEXTVAL, SYSDATE, :studentNum, :userId, :userName, :userImg, :emoticon, :good, :comment, :postId)`, 
-        { studentNum: studentNum, userName: userName, userImg: userImg, emoticon: emoticon, good: good, comment: comment, postId: postId })
+        { studentNum: 1000, userName: '이 테이블에 저장안할거임', userImg: '', emoticon: emoticon, good: 0, comment: comment, postId: postId })
         .then(result => {
-          con.release();
-          ctx.body = true;
+          console.log("[response1] : " + JSON.stringify(result));
+          ctx.body = {
+            result: true,
+            message: result
+          };
         }, err => {
+          con.rollback();
           con.release();
           throw err;
+
+        }).then(() => { //게시글 댓글 수 올리기
+          con.execute(`UPDATE POSTS SET 
+          COMMENT_COUNT = SEQ_ID.NEXTVAL
+          WHERE POST_ID = :postId`, {postId: postId})
+          .then(result => {
+            console.log("[response2] : " + JSON.stringify(result));
+            con.release();
+            ctx.body = {
+              result: true,
+              message: result
+            };
+          }, err => {
+            con.rollback();
+            con.release();
+            throw err;
+          })
         });
       }).catch(err => {
-        ctx.body = err.message;
+        ctx.body = {
+          result: false,
+          message: err.message
+        };
         console.error("[error] : " + ctx.body);
       });
 });
