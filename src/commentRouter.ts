@@ -63,25 +63,22 @@ router.post('/', async (ctx) => {
     return false;
   }
 
-  let postId = payload.postId;
+  let postId:number = payload.postId;
   // let studentNum = payload.studentNum;
-  let userId = payload.userId;
+  let userId:number = payload.userId;
   // let userName = payload.userName;
   // let userImg = payload.userImg;
-  let emoticon = "";
-  if(payload.emoticon && payload.emoticon.length > 0){
-    emoticon = payload.emoticon.toString();
-  }
+  let emoticon:string = payload.emoticon?payload.emoticon:"";
 
-  let comment = payload.comment;
-
+  let comment:string = payload.comment?payload.comment:"";
+  // values (SEQ_ID.NEXTVAL, SYSDATE, 111, 111, "TESTER", "", "", 0, "TEST TEST", 111)
   const db = new oracleDB();
   await db.getConnection()
       .then(con => {
         return con.execute(`INSERT INTO COMMENTS 
         (COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, GOOD, COMMENT_BODY, POST_ID) 
         VALUES (SEQ_ID.NEXTVAL, SYSDATE, :studentNum, :userId, :userName, :userImg, :emoticon, :good, :comment, :postId)`, 
-        { studentNum: 1000, userId: 1000, userName: "테스터", userImg: "", emoticon: "", good: 0, comment: "코맨트", postId: 100 })
+        { studentNum: 1000, userId: userId, userName: '테스터', userImg: '', emoticon: emoticon, good: 0, comment: comment, postId: postId })
         .then(result => {
           console.log("[response1] : " + JSON.stringify(result));
           ctx.body = {
