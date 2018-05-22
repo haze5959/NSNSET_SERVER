@@ -76,7 +76,7 @@ router.post('/', async (ctx) => {
   await db.getConnection()
       .then(con => {
         return con.execute(`INSERT INTO COMMENTS 
-        (COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, GOOD, COMMENT_BODY, POST_ID) 
+        (COMMENT_ID, COMMENT_DATE, USER_ID, EMOTICON, COMMENT_BODY, POST_ID) 
         VALUES (SEQ_ID.NEXTVAL, SYSDATE, :userId, :emoticon, :comment, :postId)`, 
         { userId: userId, emoticon: emoticon, comment: comment, postId: postId })
         .then(result => {
