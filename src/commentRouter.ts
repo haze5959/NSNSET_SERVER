@@ -68,7 +68,7 @@ router.post('/', async (ctx) => {
   let userId = payload.userId;
   // let userName = payload.userName;
   // let userImg = payload.userImg;
-  let emoticon:string = payload.emoticon;
+  let emoticon:string = payload.emoticon.toString();
   let comment = payload.comment;
 
   const db = new oracleDB();
