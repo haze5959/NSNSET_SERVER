@@ -18,7 +18,6 @@
 import * as Router from 'koa-router';
 import oracleDB from './oracleDB';
 import cognitoJWT from './cognitoJWT';
-import { Oracledb } from 'oracledb';
 
 const router = new Router();
 const pageRowNum = 10;
