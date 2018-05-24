@@ -71,45 +71,56 @@ router.post('/', async (ctx) => {
   let commentEmo = payload.emoticon?payload.emoticon:"";
 
   let commentBody = payload.comment?payload.comment:"";
-  // values (SEQ_ID.NEXTVAL, SYSDATE, 111, 111, "TESTER", "", "", 0, "TEST TEST", 111)
+  
   const db = new oracleDB();
-  await db.getConnection()
-      .then(con => {
-        return con.execute(`INSERT INTO COMMENTS 
-        (COMMENT_BODY, COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, POST_ID, GOOD) 
-        VALUES (:commentBody, SEQ_COMMENT_ID.NEXTVAL, SYSDATE, 0, :userId, 'testser', '', :commentEmo, :postId, 0)`, 
-        { commentBody: commentBody, userId: userId, commentEmo: commentEmo, postId: postId })
-        .then(result => {
-          console.log("[response1] : " + JSON.stringify(result));
+  let connection = await db.getConnection()
+  .then(con => {
+    return con;
+  }).catch(err => {
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + JSON.stringify(ctx.body));
+    return null;
+  });
 
-          //게시글 댓글 수 올리기
-          con.execute(`UPDATE POSTS SET 
-          COMMENT_COUNT = COMMENT_COUNT + 1
-          WHERE POST_ID = :postId`, { postId: postId })
-          .then(result => {
-            console.log("[response2] : " + JSON.stringify(result));
-            con.release();
-            ctx.body = {
-              result: true,
-              message: result
-            };
-          }, err => {
-            con.rollback();
-            con.release();
-            throw err;
-          });
-        }, err => {
-          con.rollback();
-          con.release();
-          throw err;
-        });
-      }).catch(err => {
-        ctx.body = {
-          result: false,
-          message: err.message
-        };
-        console.error("[error] : " + JSON.stringify(ctx.body));
-      });
+  if(!connection){
+    //통신 종료
+    return false;
+  }
+  
+  //코맨트 올리기================================================
+  await connection.execute(`INSERT INTO COMMENTS 
+  (COMMENT_BODY, COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, POST_ID, GOOD) 
+  VALUES (:commentBody, SEQ_COMMENT_ID.NEXTVAL, SYSDATE, 0, :userId, 'testser', '', :commentEmo, :postId, 0)`, 
+  { commentBody: commentBody, userId: userId, commentEmo: commentEmo, postId: postId })
+  .then(result => {
+    console.log("[response1] : " + JSON.stringify(result));
+  }, err => {
+    connection.rollback();
+    connection.release();
+    throw err;
+  });
+  //================================================================
+
+  //게시글 댓글 수 올리기================================================
+  await connection.execute(`UPDATE POSTS SET 
+  COMMENT_COUNT = COMMENT_COUNT + 1
+  WHERE POST_ID = :postId`, { postId: postId })
+  .then(result => {
+    console.log("[response2] : " + JSON.stringify(result));
+    connection.release();
+    ctx.body = {
+      result: true,
+      message: result
+    };
+  }, err => {
+    connection.rollback();
+    connection.release();
+    throw err;
+  });
+  //================================================================
 });
 
 /**
