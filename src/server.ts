@@ -10,7 +10,7 @@ import oracleDB from './oracleDB';
 
 
 const app = new Koa();
-app.keys = ['NSNESTOQ123'];  //변조방지 쿠키키
+// app.keys = ['NSNESTOQ123'];  //변조방지 쿠키키
 app.context.db = {  //서버쪽 프로퍼티
     "version": "1.0.0"
 };

@@ -222,6 +222,7 @@ router.put('/', async (ctx) => {
         { postId: postId })
         .then(result => {
           con.release();
+          ctx.cookies.set('nsnest_good_bad_info', 'testOQ');
           ctx.body = {
             result: true,
             message: result
