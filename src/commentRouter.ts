@@ -32,7 +32,7 @@ router.get('/', async (ctx) => {
   const db = new oracleDB();
   await db.getConnection()
   .then(con => {
-    return con.execute('SELECT * FROM COMMENTS WHERE POST_ID = :postId', {postId: postId})
+    return con.execute('SELECT * FROM COMMENTS WHERE POST_ID = :postId ORDER BY COMMENT_ID', {postId: postId})
     .then(result => {
       ctx.body = result.rows;
       console.log("[response] : " + ctx.body);
