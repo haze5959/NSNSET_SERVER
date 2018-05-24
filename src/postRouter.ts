@@ -1,20 +1,3 @@
-/* 게시글정보 형테
-{
-  postsID: 999999,
-  postClassify: 99,
-  studentNum: 99,
-  publisherId: 9999,
-  publisher: '에러',
-  publisherIntro: '게시글을 불러오지 못하였습니다.',
-  publisherImg: null,
-  images: null,
-  title: '게시글을 불러오지 못하였습니다.',
-  body: '',
-  good: 0,
-  bad: 0
-}
-*/
-
 import * as Router from 'koa-router';
 import oracleDB from './oracleDB';
 import cognitoJWT from './cognitoJWT';
@@ -28,6 +11,7 @@ const pageRowNum = 10;
 router.get('/', async (ctx) => {  
   const param = ctx.request.query;
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+    console.error("토큰 검증 실패");
     ctx.body = "토큰 검증 실패";
     return false;
   } 
@@ -149,6 +133,7 @@ router.post('/', async (ctx) => {
   console.log("[ctx.params] : " + JSON.stringify(param));
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+    console.error("토큰 검증 실패");
     ctx.body = "토큰 검증 실패";
     return false;
   } 
@@ -209,6 +194,7 @@ router.put('/', async (ctx) => {
   console.log("[ctx.params] : " + JSON.stringify(param));
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+    console.error("토큰 검증 실패");
     ctx.body = "토큰 검증 실패";
     return false;
   } 
@@ -236,13 +222,19 @@ router.put('/', async (ctx) => {
         { postId: postId })
         .then(result => {
           con.release();
-          ctx.body = true;
+          ctx.body = {
+            result: true,
+            message: result
+          };
         }, err => {
           con.release();
           throw err;
         });
       }).catch(err => {
-        ctx.body = err.message;
+        ctx.body = {
+          result: false,
+          message: err.message
+        };
         console.error("[error] : " + ctx.body);
       });
 });
@@ -250,9 +242,12 @@ router.put('/', async (ctx) => {
 /**
  * DELETE
  */
-router.delete('/', async (ctx) => {  
+router.del('/', async (ctx) => {  
   const param = ctx.request.query;
+  console.log("[ctx.params1] : " + JSON.stringify(param));
+  console.log("[ctx.params2] : " + JSON.stringify(ctx.body));
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+    console.error("토큰 검증 실패");
     ctx.body = "토큰 검증 실패";
     return false;
   } 
