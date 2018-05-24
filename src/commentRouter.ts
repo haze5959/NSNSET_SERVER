@@ -81,6 +81,7 @@ router.post('/', async (ctx) => {
         { commentBody: commentBody, userId: userId, commentEmo: commentEmo, postId: postId })
         .then(result => {
           console.log("[response1] : " + JSON.stringify(result));
+          return 0;
         }, err => {
           con.rollback();
           con.release();

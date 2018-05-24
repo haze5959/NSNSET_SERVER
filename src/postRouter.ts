@@ -260,11 +260,12 @@ router.delete('/', async (ctx) => {
         { postId: postId })
         .then(result => {
           console.log("[response1] : " + JSON.stringify(result));
+          return 0;
         }, err => {
           con.release();
           throw err;
         }).then(con => {  //해당 게시글
-          return con.execute(`DELETE FROM COMMENTS WHERE POST_ID = :postId`, 
+          con.execute(`DELETE FROM COMMENTS WHERE POST_ID = :postId`, 
           { postId: postId })
           .then(result => {
             console.log("[response2] : " + JSON.stringify(result));
