@@ -68,19 +68,19 @@ router.post('/', async (ctx) => {
   let userId = payload.userId;
   // let userName = payload.userName;
   // let userImg = payload.userImg;
-  let emoticon = payload.emoticon?payload.emoticon:"";
+  let commentEmo = payload.emoticon?payload.emoticon:"";
 
-  let comment = payload.comment?payload.comment:"";
+  let commentBody = payload.comment?payload.comment:"";
   // values (SEQ_ID.NEXTVAL, SYSDATE, 111, 111, "TESTER", "", "", 0, "TEST TEST", 111)
   const db = new oracleDB();
   await db.getConnection()
       .then(con => {
         return con.execute(`INSERT INTO COMMENTS 
         (COMMENT_BODY, COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, POST_ID, GOOD) 
-        VALUES ('테스트', 222, '', 0, :userId, 'testser', '', 'emo', :postId, 0)`, 
+        VALUES (:commentBody, 222, '', 0, :userId, 'testser', '', :commentEmo, :postId, 0)`, 
         // (COMMENT_ID, COMMENT_DATE, USER_ID, EMOTICON, COMMENT_BODY, POST_ID) 
         // { userId: userId, emoticon: emoticon, comment: comment, postId: postId })
-        { userId: userId, postId: postId })
+        { commentBody: commentBody, userId: userId, commentEmo: commentEmo, postId: postId })
         .then(result => {
           console.log("[response1] : " + JSON.stringify(result));
           // ctx.body = {
@@ -94,7 +94,7 @@ router.post('/', async (ctx) => {
 
         }).then(() => { //게시글 댓글 수 올리기
           con.execute(`UPDATE POSTS SET 
-          COMMENT_COUNT = SEQ_ID.NEXTVAL
+          COMMENT_COUNT = COMMENT_COUNT + 1
           WHERE POST_ID = :postId`, { postId: postId })
           .then(result => {
             console.log("[response2] : " + JSON.stringify(result));

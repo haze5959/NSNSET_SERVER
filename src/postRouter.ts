@@ -205,34 +205,35 @@ router.post('/', async (ctx) => {
  * PUT
  */
 router.put('/', async (ctx) => {  
-  const param = ctx.request.query;
+  const param = ctx.body;
+  console.log("[ctx.params] : " + JSON.stringify(param));
+  
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     ctx.body = "토큰 검증 실패";
     return false;
   } 
+  const payload = param['payload'];
+
+  if(!payload){
+    ctx.body = "페이로드가 없습니다.";
+    return false;
+  }
+
+  let postId = payload.postId;
+  let isGood:boolean = payload.isGood;
+
+  var goodBadQuery = "BAD = BAD + 1";
+  if(isGood){
+    goodBadQuery = "GOOD = GOOD + 1";
+  }
 
   const db = new oracleDB();
-  console.log("[ctx.params] : " + JSON.stringify(param));
-  let postId = param.postId;
-  let classify = param.classify;
-  let studentNum = param.studentNum;
-  let publisherId = param.publisherId;
-  let publisherName = param.publisherName;
-  let publisherIntro = param.publisherIntro;
-  let publisherImg = param.publisherImg;
-  let images = param.images;
-  let title = param.title;
-  let body = param.body;
-  let good = param.good;
-  let bad = param.bad;
-  let MARKER = param.MARKER;
-  let TAG = param.TAG;
   await db.getConnection()
       .then(con => {
-        return con.execute(`UPDATE POSTS SET 
-        POST_DATE = SYSDATE, IMAGES = :images, TITLE = :title, BODY = :body, MARKER = :MARKER, TAG = :TAG
-        WHERE POST_ID = :postId`, 
-        { images: images, title: title, body: body, MARKER: MARKER, TAG: TAG, postId: postId })
+        return con.execute('UPDATE POSTS SET '
+        + goodBadQuery + 
+        ' WHERE POST_ID = :postId', 
+        { postId: postId })
         .then(result => {
           con.release();
           ctx.body = true;
@@ -266,13 +267,19 @@ router.delete('/', async (ctx) => {
         { postId: postId })
         .then(result => {
           con.release();
-          ctx.body = true;
+          ctx.body = {
+            result: true,
+            message: result
+          };
         }, err => {
           con.release();
           throw err;
         });
       }).catch(err => {
-        ctx.body = err.message;
+        ctx.body = {
+          result: false,
+          message: err.message
+        };
         console.error("[error] : " + ctx.body);
       });
 });
