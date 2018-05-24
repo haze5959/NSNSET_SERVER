@@ -101,6 +101,12 @@ router.post('/', async (ctx) => {
     connection.rollback();
     connection.release();
     throw err;
+  }).catch(err => {
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
   });
   //================================================================
 
@@ -119,6 +125,12 @@ router.post('/', async (ctx) => {
     connection.rollback();
     connection.release();
     throw err;
+  }).catch(err => {
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
   });
   //================================================================
 });
@@ -139,13 +151,19 @@ router.delete('/', async (ctx) => {
         { commentId: commentId })
         .then(result => {
           con.release();
-          ctx.body = true;
+          ctx.body = {
+            result: true,
+            message: result
+          };
         }, err => {
           con.release();
           throw err;
         });
       }).catch(err => {
-        ctx.body = err.message;
+        ctx.body = {
+          result: false,
+          message: err.message
+        };
         console.error("[error] : " + ctx.body);
       });
 });

@@ -250,48 +250,68 @@ router.delete('/', async (ctx) => {
     return false;
   } 
   
-  const db = new oracleDB();
   console.log("[ctx.params] : " + JSON.stringify(param));
   let postId = param.postId;
 
-  await db.getConnection()
-      .then(con => {
-        return con.execute(`DELETE FROM POSTS WHERE POST_ID = :postId`, 
-        { postId: postId })
-        .then(result => {
-          console.log("[response1] : " + JSON.stringify(result));
-          return 0;
-        }, err => {
-          con.release();
-          throw err;
-        }).then(con => {  //해당 게시글
-          con.execute(`DELETE FROM COMMENTS WHERE POST_ID = :postId`, 
-          { postId: postId })
-          .then(result => {
-            console.log("[response2] : " + JSON.stringify(result));
-            con.release();
-            ctx.body = {
-              result: true,
-              message: result
-            };
-          }, err => {
-            con.rollback();
-            con.release();
-            throw err;
-          });
+  const db = new oracleDB();
+  let connection = await db.getConnection()
+  .then(con => {
+    return con;
+  }).catch(err => {
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + JSON.stringify(ctx.body));
+    return null;
+  });
 
-        }, err => {
-          con.rollback();
-          con.release();
-          throw err;
-        });
-      }).catch(err => {
-        ctx.body = {
-          result: false,
-          message: err.message
-        };
-        console.error("[error] : " + ctx.body);
-      });
+  if(!connection){
+    //통신 종료
+    return false;
+  }
+
+  //게시글 삭제================================================
+  await connection.execute(`DELETE FROM POSTS WHERE POST_ID = :postId`, 
+  { postId: postId })
+  .then(result => {
+    console.log("[response1] : " + JSON.stringify(result));
+    return 0;
+  }, err => {
+    connection.rollback();
+    connection.release();
+    throw err;
+  }).catch(err => {
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
+  });
+  //================================================================
+
+  //해당 게시글 코멘트 삭제================================================
+  await connection.execute(`DELETE FROM COMMENTS WHERE POST_ID = :postId`, 
+  { postId: postId })
+  .then(result => {
+    console.log("[response2] : " + JSON.stringify(result));
+    connection.release();
+    ctx.body = {
+      result: true,
+      message: result
+    };
+  }, err => {
+    connection.rollback();
+    connection.release();
+    throw err;
+  }).catch(err => {
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
+  });
+  //================================================================
 });
 
 export default router.routes();
