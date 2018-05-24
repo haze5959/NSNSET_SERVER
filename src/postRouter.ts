@@ -242,10 +242,8 @@ router.put('/', async (ctx) => {
 /**
  * DELETE
  */
-router.del('/', async (ctx) => {  
+router.delete('/', async (ctx) => {  
   const param = ctx.request.query;
-  console.log("[ctx.params1] : " + JSON.stringify(param));
-  console.log("[ctx.params2] : " + JSON.stringify(ctx.body));
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     console.error("토큰 검증 실패");
     ctx.body = "토큰 검증 실패";
@@ -261,12 +259,28 @@ router.del('/', async (ctx) => {
         return con.execute(`DELETE FROM POSTS WHERE POST_ID = :postId`, 
         { postId: postId })
         .then(result => {
-          con.release();
-          ctx.body = {
-            result: true,
-            message: result
-          };
+          console.log("[response1] : " + JSON.stringify(result));
         }, err => {
+          con.release();
+          throw err;
+        }).then(con => {  //해당 게시글
+          return con.execute(`DELETE FROM COMMENTS WHERE POST_ID = :postId`, 
+          { postId: postId })
+          .then(result => {
+            console.log("[response2] : " + JSON.stringify(result));
+            con.release();
+            ctx.body = {
+              result: true,
+              message: result
+            };
+          }, err => {
+            con.rollback();
+            con.release();
+            throw err;
+          });
+
+        }, err => {
+          con.rollback();
           con.release();
           throw err;
         });

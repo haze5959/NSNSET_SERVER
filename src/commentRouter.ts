@@ -77,16 +77,10 @@ router.post('/', async (ctx) => {
       .then(con => {
         return con.execute(`INSERT INTO COMMENTS 
         (COMMENT_BODY, COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, POST_ID, GOOD) 
-        VALUES (:commentBody, 222, '', 0, :userId, 'testser', '', :commentEmo, :postId, 0)`, 
-        // (COMMENT_ID, COMMENT_DATE, USER_ID, EMOTICON, COMMENT_BODY, POST_ID) 
-        // { userId: userId, emoticon: emoticon, comment: comment, postId: postId })
+        VALUES (:commentBody, SEQ_COMMENT_ID, SYSDATE, 0, :userId, 'testser', '', :commentEmo, :postId, 0)`, 
         { commentBody: commentBody, userId: userId, commentEmo: commentEmo, postId: postId })
         .then(result => {
           console.log("[response1] : " + JSON.stringify(result));
-          // ctx.body = {
-          //   result: true,
-          //   message: result
-          // };
         }, err => {
           con.rollback();
           con.release();
@@ -107,7 +101,7 @@ router.post('/', async (ctx) => {
             con.rollback();
             con.release();
             throw err;
-          })
+          });
         });
       }).catch(err => {
         ctx.body = {
@@ -124,13 +118,13 @@ router.post('/', async (ctx) => {
 router.delete('/', async (ctx) => {  
 
   const param = ctx.request.query;
-  const db = new oracleDB();
   console.log("[ctx.params] : " + JSON.stringify(param));
   let commentId = param.commentId;
 
+  const db = new oracleDB();
   await db.getConnection()
       .then(con => {
-        return con.execute(`DELETE FROM COMMENTS WHERE POST_ID = :commentId`, 
+        return con.execute(`DELETE FROM COMMENTS WHERE COMMENT_ID = :commentId`, 
         { commentId: commentId })
         .then(result => {
           con.release();
