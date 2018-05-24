@@ -81,13 +81,8 @@ router.post('/', async (ctx) => {
         { commentBody: commentBody, userId: userId, commentEmo: commentEmo, postId: postId })
         .then(result => {
           console.log("[response1] : " + JSON.stringify(result));
-          return 0;
-        }, err => {
-          con.rollback();
-          con.release();
-          throw err;
 
-        }).then(() => { //게시글 댓글 수 올리기
+          //게시글 댓글 수 올리기
           con.execute(`UPDATE POSTS SET 
           COMMENT_COUNT = COMMENT_COUNT + 1
           WHERE POST_ID = :postId`, { postId: postId })
@@ -103,6 +98,10 @@ router.post('/', async (ctx) => {
             con.release();
             throw err;
           });
+        }, err => {
+          con.rollback();
+          con.release();
+          throw err;
         });
       }).catch(err => {
         ctx.body = {
