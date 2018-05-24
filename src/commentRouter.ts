@@ -114,7 +114,7 @@ router.post('/', async (ctx) => {
           result: false,
           message: err.message
         };
-        console.error("[error] : " + ctx.body);
+        console.error("[error] : " + JSON.stringify(ctx.body));
       });
 });
 
