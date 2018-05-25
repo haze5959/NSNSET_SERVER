@@ -55,7 +55,7 @@ router.get('/', async (ctx) => {
       let contents = param['contents'];
       await db.getConnection()
       .then(con => {
-        return con.execute('SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY :sortParam ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY', { classify: classify, contents: contents, sortParam: sortParam, offset: offset, maxnumrows: pageRowNum })
+        return con.execute(`SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`, { classify: classify, contents: contents, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
           // console.log("[response] : " + ctx.body);
@@ -74,11 +74,11 @@ router.get('/', async (ctx) => {
     } else {  //전체 가져오기
       await db.getConnection()
       .then(con => {
-        var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY :sortParam ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+        var queryStr = `SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`;
         console.log('OQtest - ' + queryStr);
-        var queryJson = { classify: classify, sortParam: sortParam, offset: offset, maxnumrows: pageRowNum };
+        var queryJson = { classify: classify, offset: offset, maxnumrows: pageRowNum };
         if (classify == 0) {  //게시글 종류 상관없이 전부
-          queryStr = 'SELECT * FROM POSTS ORDER BY :sortParam ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+          queryStr = `SELECT * FROM POSTS ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`;
           delete queryJson['classify'];
         }
         return con.execute(queryStr, queryJson)
