@@ -55,7 +55,8 @@ router.get('/', async (ctx) => {
       let contents = param['contents'];
       await db.getConnection()
       .then(con => {
-        return con.execute(`SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`, { classify: classify, contents: contents, offset: offset, maxnumrows: pageRowNum })
+        return con.execute(`SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE LIKE '%${contents}%' ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`
+        , { classify: classify, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
           // console.log("[response] : " + ctx.body);
@@ -75,7 +76,6 @@ router.get('/', async (ctx) => {
       await db.getConnection()
       .then(con => {
         var queryStr = `SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`;
-        console.log('OQtest - ' + queryStr);
         var queryJson = { classify: classify, offset: offset, maxnumrows: pageRowNum };
         if (classify == 0) {  //게시글 종류 상관없이 전부
           queryStr = `SELECT * FROM POSTS ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`;
@@ -112,14 +112,12 @@ router.get('/pageSize', async (ctx) => {
     let classify = param['classify']?param['classify']:0;
 
     var queryStr;
-    var queryJson;
+    var queryJson = { classify: classify };
     if (param['contents']) {  //게시글 검색일 시
       const contents:string = param['contents'];
-      queryStr = 'SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents';
-      queryJson = { classify: classify , contents:contents };
+      queryStr = `SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE LIKE '%${contents}%'`;
     } else {
       queryStr = 'SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify';
-      queryJson = { classify: classify };
     }
     
     if (classify == 0) {  //게시글 종류 상관없이 전부
