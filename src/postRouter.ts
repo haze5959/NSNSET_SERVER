@@ -44,11 +44,11 @@ router.get('/', async (ctx) => {
     let offset:number = (page - 1) * pageRowNum;
 
     if (sort == "id") {  //학번순
-      sort = 'POST_ID';
+      sort = 1;
     } else if(sort == "good") { //좋아요
-      sort = 'GOOD';
+      sort = 11;
     } else {  //싫어요
-      sort = 'BAD';
+      sort = 12;
     }
 
     if (param['contents']) {  //게시글 검색일 시
@@ -71,10 +71,10 @@ router.get('/', async (ctx) => {
     } else {  //전체 가져오기
       await db.getConnection()
       .then(con => {
-        var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY 1 ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
-        var queryJson = { classify: classify, offset: offset, maxnumrows: pageRowNum };
+        var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+        var queryJson = { classify: classify, sort: sort, offset: offset, maxnumrows: pageRowNum };
         if (classify == 0) {  //게시글 종류 상관없이 전부
-          queryStr = 'SELECT * FROM POSTS ORDER BY 1 ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+          queryStr = 'SELECT * FROM POSTS ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
           delete queryJson['classify'];
         }
         return con.execute(queryStr, queryJson)
