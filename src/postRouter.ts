@@ -17,7 +17,7 @@ router.get('/', async (ctx) => {
   } 
   
   const db = new oracleDB();
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
   if(param['postId']){ //해당 게시글 아이디에 해당하는 게시글 정보 가져오기
     let postId = param['postId'];
     await db.getConnection()
@@ -25,7 +25,7 @@ router.get('/', async (ctx) => {
       return con.execute('SELECT * FROM POSTS WHERE POST_ID = :postId', {postId: postId})
       .then(result => {
         ctx.body = result.rows;
-        console.log("[response] : " + ctx.body);
+        // console.log("[response] : " + ctx.body);
         con.release();
       }, err => {
         con.release();
@@ -58,7 +58,7 @@ router.get('/', async (ctx) => {
         return con.execute('SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY', { classify: classify, contents: contents, sort: sort, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
-          console.log("[response] : " + ctx.body);
+          // console.log("[response] : " + ctx.body);
           con.release();
         }, err => {
           con.release();
@@ -80,7 +80,7 @@ router.get('/', async (ctx) => {
         return con.execute(queryStr, queryJson)
         .then(result => {
           ctx.body = result.rows;
-          console.log("[response] : " + ctx.body);
+          // console.log("[response] : " + ctx.body);
           con.commit();
           con.release();
         }, err => {
@@ -101,11 +101,22 @@ router.get('/pageSize', async (ctx) => {
   const param = ctx.request.query;
   const db = new oracleDB();
   console.log("[ctx.params] : " + JSON.stringify(param));
+  
   await db.getConnection()
   .then(con => {
     let classify = param['classify']?param['classify']:0;
-    var queryStr = 'SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify';
-    var queryJson = { classify: classify };
+
+    var queryStr;
+    var queryJson;
+    if (param['contents']) {  //게시글 검색일 시
+      const contents:string = param['contents'];
+      queryStr = 'SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents';
+      queryJson = { classify: classify , contents:contents };
+    } else {
+      queryStr = 'SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify';
+      queryJson = { classify: classify };
+    }
+    
     if (classify == 0) {  //게시글 종류 상관없이 전부
       queryStr = 'SELECT COUNT(*) FROM POSTS';
       delete queryJson['classify'];
@@ -113,7 +124,7 @@ router.get('/pageSize', async (ctx) => {
     return con.execute(queryStr, queryJson)
     .then(result => {
       ctx.body = result.rows;
-      console.log("[response] : " + ctx.body);
+      // console.log("[response] : " + ctx.body);
       con.release();
     }, err => {
       con.release();
@@ -130,7 +141,7 @@ router.get('/pageSize', async (ctx) => {
  */
 router.post('/', async (ctx) => {  
   const param = ctx.body;
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     console.error("토큰 검증 실패");
@@ -163,14 +174,14 @@ router.post('/', async (ctx) => {
         VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :studentNum, :publisherId, :publisherName, :publisherIntro, :publisherImg, :images, :title, :body, :MARKER, :TAG)`, 
         { classify: classify, studentNum: studentNum, publisherId: publisherId, publisherName: publisherName, publisherIntro: publisherIntro, publisherImg: publisherImg, images: images, title: title, body: body, MARKER: MARKER, TAG: TAG })
         .then(result => {
-          console.log("[response] : " + JSON.stringify(result));
+          // console.log("[response] : " + JSON.stringify(result));
           con.release();
           ctx.body = {
             result: true,
             message: result
           };
         }, err => {
-          console.log("[error] : " + err.message);
+          console.error("[error] : " + err.message);
           con.release();
           ctx.body = {
             result: false,
@@ -191,7 +202,7 @@ router.post('/', async (ctx) => {
  */
 router.put('/', async (ctx) => {  
   const param = ctx.body;
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     console.error("토큰 검증 실패");
@@ -251,7 +262,7 @@ router.delete('/', async (ctx) => {
     return false;
   } 
   
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
   let postId = param.postId;
 
   const db = new oracleDB();
@@ -276,7 +287,7 @@ router.delete('/', async (ctx) => {
   await connection.execute(`DELETE FROM POSTS WHERE POST_ID = :postId`, 
   { postId: postId })
   .then(result => {
-    console.log("[response1] : " + JSON.stringify(result));
+    // console.log("[response1] : " + JSON.stringify(result));
     return 0;
   }, err => {
     connection.rollback();
@@ -295,7 +306,7 @@ router.delete('/', async (ctx) => {
   await connection.execute(`DELETE FROM COMMENTS WHERE POST_ID = :postId`, 
   { postId: postId })
   .then(result => {
-    console.log("[response2] : " + JSON.stringify(result));
+    // console.log("[response2] : " + JSON.stringify(result));
     connection.release();
     ctx.body = {
       result: true,

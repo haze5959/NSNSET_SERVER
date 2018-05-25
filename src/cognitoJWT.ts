@@ -60,7 +60,7 @@ export default class cognitoJWT {
         result = false;
       }else{
         // if payload exists, then the token is verified!
-        console.log("[ValidateToken] success : " + JSON.stringify(payload));
+        // console.log("[ValidateToken] success : " + JSON.stringify(payload));
         result = true;
       }
     });

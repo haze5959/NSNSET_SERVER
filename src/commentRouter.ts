@@ -26,7 +26,7 @@ router.get('/', async (ctx) => {
   // ctx.cookies.get('nsnestCookie', { signed: true });
   // ctx.throw(400, 'name required');
   const param = ctx.request.query;
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
   let postId = param['postId'];
 
   const db = new oracleDB();
@@ -35,7 +35,7 @@ router.get('/', async (ctx) => {
     return con.execute('SELECT * FROM COMMENTS WHERE POST_ID = :postId ORDER BY COMMENT_ID', {postId: postId})
     .then(result => {
       ctx.body = result.rows;
-      console.log("[response] : " + ctx.body);
+      // console.log("[response] : " + ctx.body);
       con.release();
     }, err => {
       con.release();
@@ -55,7 +55,7 @@ router.get('/', async (ctx) => {
 router.post('/', async (ctx) => {  
 
   const param = ctx.body;
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
   const payload = param['payload'];
 
   if(!payload){
@@ -96,7 +96,7 @@ router.post('/', async (ctx) => {
   VALUES (:commentBody, SEQ_COMMENT_ID.NEXTVAL, SYSDATE, 0, :userId, 'testser', '', :commentEmo, :postId, 0)`, 
   { commentBody: commentBody, userId: userId, commentEmo: commentEmo, postId: postId })
   .then(result => {
-    console.log("[response1] : " + JSON.stringify(result));
+    // console.log("[response1] : " + JSON.stringify(result));
   }, err => {
     connection.rollback();
     connection.release();
@@ -115,7 +115,7 @@ router.post('/', async (ctx) => {
   COMMENT_COUNT = COMMENT_COUNT + 1
   WHERE POST_ID = :postId`, { postId: postId })
   .then(result => {
-    console.log("[response2] : " + JSON.stringify(result));
+    // console.log("[response2] : " + JSON.stringify(result));
     connection.release();
     ctx.body = {
       result: true,
@@ -141,7 +141,7 @@ router.post('/', async (ctx) => {
 router.delete('/', async (ctx) => {  
 
   const param = ctx.request.query;
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
   let commentId = param.commentId;
 
   const db = new oracleDB();

@@ -25,17 +25,7 @@ app.use(async (ctx, next) => {
     try {
         ctx.body = ctx.request.body;
         console.log('[request Url] : ' + ctx.url + " / [request Method] : " + ctx.method);
-        // console.log(ctx.db.version);
         
-        switch (ctx.accepts('json', 'text')) {
-            case 'json': 
-                console.log('[request json] : ' + ctx.body);
-                break;
-            case 'text': 
-                console.log('[request text] : ' + ctx.body);
-                break;
-            default: ctx.throw(406, 'json, or text only');
-        }
         await next();
     } catch (err) {
         ctx.status = err.statusCode || err.status || 500;
