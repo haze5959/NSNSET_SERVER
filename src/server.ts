@@ -4,7 +4,8 @@ import * as bodyParser from 'koa-bodyparser';
 import userRouter from './userRouter';
 import postRouter from './postRouter';
 import commentRouter from './commentRouter';
-import loginRouter from './loginRouter';
+// import loginRouter from './loginRouter';
+import uploadFileRouter from './uploadFileRouter';
 import redis from 'redis';
 import oracleDB from './oracleDB';
 
@@ -49,7 +50,7 @@ const apiRouter = new Router({ prefix: '/api'});
 apiRouter.use('/users', userRouter);
 apiRouter.use('/posts', postRouter);
 apiRouter.use('/comment', commentRouter);
-apiRouter.use('/login', loginRouter);
+apiRouter.use('/file', uploadFileRouter);
 app.use(apiRouter.routes());
 
 app.listen(3000);

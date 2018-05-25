@@ -54,7 +54,7 @@ router.get('/', async (ctx) => {
     if (param['contents']) {  //게시글 검색일 시
       let contents = param['contents'];
       await db.getConnection()
-      .then(con => {
+      .then(con => {  //TODO:유저 아이디도
         return con.execute(`SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE LIKE '%${contents}%' ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`
         , { classify: classify, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
@@ -115,7 +115,7 @@ router.get('/pageSize', async (ctx) => {
     var queryJson = { classify: classify };
     if (param['contents']) {  //게시글 검색일 시
       const contents:string = param['contents'];
-      queryStr = `SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE LIKE '%${contents}%'`;
+      queryStr = `SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE LIKE '%${contents}%'`; //TODO:유저 아이디도
     } else {
       queryStr = 'SELECT COUNT(*) FROM POSTS WHERE POST_CLASSIFY = :classify';
     }
