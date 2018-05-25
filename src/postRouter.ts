@@ -38,29 +38,32 @@ router.get('/', async (ctx) => {
   } else {  //모든 게시글 정보 가져오기
     
     let classify:number = param['classify']?param['classify']:0;
-    var sort = param['sort']?param['sort']:'id';
+    var sortParam = param['sort']?param['sort']:'id';
     let order = param['order']?param['order']:'asc';
     let page = param['page']?param['page']:1;
     let offset:number = (page - 1) * pageRowNum;
 
-    if (sort == "id") {  //학번순
-      sort = 1;
-    } else if(sort == "good") { //좋아요
-      sort = 11;
+    if (sortParam == "id") {  //학번순
+      sortParam = 1;
+    } else if(sortParam == "good") { //좋아요
+      sortParam = 11;
     } else {  //싫어요
-      sort = 12;
+      sortParam = 12;
     }
 
     if (param['contents']) {  //게시글 검색일 시
       let contents = param['contents'];
       await db.getConnection()
       .then(con => {
-        return con.execute('SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY', { classify: classify, contents: contents, sort: sort, offset: offset, maxnumrows: pageRowNum })
+        return con.execute('SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE = :contents ORDER BY :sortParam ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY', { classify: classify, contents: contents, sortParam: sortParam, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
           // console.log("[response] : " + ctx.body);
           con.release();
         }, err => {
+          con.release();
+          throw err;
+        }).catch(err => {
           con.release();
           throw err;
         });
@@ -71,21 +74,22 @@ router.get('/', async (ctx) => {
     } else {  //전체 가져오기
       await db.getConnection()
       .then(con => {
-        var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY 1 ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+        var queryStr = 'SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY :sortParam ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
         console.log('OQtest - ' + queryStr);
-        var queryJson = { classify: classify, sort: sort, offset: offset, maxnumrows: pageRowNum };
+        var queryJson = { classify: classify, sortParam: sortParam, offset: offset, maxnumrows: pageRowNum };
         if (classify == 0) {  //게시글 종류 상관없이 전부
-          queryStr = 'SELECT * FROM POSTS ORDER BY :sort ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
+          queryStr = 'SELECT * FROM POSTS ORDER BY :sortParam ' + order + ' OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY';
           delete queryJson['classify'];
         }
         return con.execute(queryStr, queryJson)
         .then(result => {
           ctx.body = result.rows;
           // console.log("[response] : " + ctx.body);
-          con.commit();
           con.release();
         }, err => {
-          con.rollback();
+          con.release();
+          throw err;
+        }).catch(err => {
           con.release();
           throw err;
         });
