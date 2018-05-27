@@ -148,13 +148,19 @@ router.post('/', async (ctx) => {
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     console.error("토큰 검증 실패");
-    ctx.body = "토큰 검증 실패";
+    ctx.body = {
+      result: false,
+      message: "토큰 검증 실패"
+    };
     return false;
   } 
   const payload = param['payload'];
 
   if(!payload){
-    ctx.body = "페이로드가 없습니다.";
+    ctx.body = {
+      result: false,
+      message: "페이로드가 없습니다."
+    };
     return false;
   }
 
