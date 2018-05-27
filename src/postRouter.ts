@@ -170,11 +170,21 @@ router.post('/', async (ctx) => {
   let publisherName = payload.publisher;
   let publisherIntro = payload.publisherIntro?payload.publisherIntro:"";
   let publisherImg = payload.publisherImg?payload.publisherImg:"";
-  let images = payload.images?payload.images:"";
+
+  let images = "";
+  if(payload.images){
+    images = payload.images.toString();
+  }
+  
   let title = payload.title;
   let body = payload.body?payload.body:"";
   let MARKER = payload.MARKER?payload.MARKER:"";
-  let TAG = payload.TAG?payload.TAG:"";
+  
+  let TAG = "";
+  if(payload.images){
+    TAG = payload.TAG.toString();
+  }
+
   const db = new oracleDB();
   await db.getConnection()
       .then(con => {
