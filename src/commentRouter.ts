@@ -22,9 +22,6 @@ const router = new Router();
  * GET
  */
 router.get('/', async (ctx) => {  
-  // ctx.cookies.set('nsnestCookie', 'testOQ', { signed: true });    //maxAge 도 설정가능
-  // ctx.cookies.get('nsnestCookie', { signed: true });
-  // ctx.throw(400, 'name required');
   const param = ctx.request.query;
   // console.log("[ctx.params] : " + JSON.stringify(param));
   let postId = param['postId'];

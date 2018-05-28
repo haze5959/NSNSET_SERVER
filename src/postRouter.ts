@@ -172,16 +172,18 @@ router.post('/', async (ctx) => {
   let publisherImg = payload.publisherImg?payload.publisherImg:"";
 
   let images = "";
-  if(payload.images){
-    images = payload.images.toString();
+  let imageArr:string[] = payload.images;
+  if(imageArr && imageArr.length > 0){
+    images = imageArr.toString();
   }
   
   let title = payload.title;
   let body = payload.body?payload.body:"";
   let MARKER = payload.MARKER?payload.MARKER:"";
-  
+
   let TAG = "";
-  if(payload.images){
+  let tagArr:string[] = payload.TAG;
+  if(tagArr && tagArr.length > 0){
     TAG = payload.TAG.toString();
   }
 
@@ -252,7 +254,6 @@ router.put('/', async (ctx) => {
         { postId: postId })
         .then(result => {
           con.release();
-          ctx.cookies.set('nsnest_good_bad_info', 'testOQ');
           ctx.body = {
             result: true,
             message: result
