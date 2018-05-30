@@ -148,13 +148,19 @@ router.post('/', async (ctx) => {
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     console.error("토큰 검증 실패");
-    ctx.body = "토큰 검증 실패";
+    ctx.body = {
+      result: false,
+      message: "토큰 검증 실패"
+    };
     return false;
   } 
   const payload = param['payload'];
 
   if(!payload){
-    ctx.body = "페이로드가 없습니다.";
+    ctx.body = {
+      result: false,
+      message: "페이로드가 없습니다."
+    };
     return false;
   }
 
@@ -164,11 +170,23 @@ router.post('/', async (ctx) => {
   let publisherName = payload.publisher;
   let publisherIntro = payload.publisherIntro?payload.publisherIntro:"";
   let publisherImg = payload.publisherImg?payload.publisherImg:"";
-  let images = payload.images?payload.images:"";
+
+  let images = "";
+  let imageArr:string[] = payload.images;
+  if(imageArr && imageArr.length > 0){
+    images = imageArr.toString();
+  }
+  
   let title = payload.title;
   let body = payload.body?payload.body:"";
   let MARKER = payload.MARKER?payload.MARKER:"";
-  let TAG = payload.TAG?payload.TAG:"";
+
+  let TAG = "";
+  let tagArr:string[] = payload.TAG;
+  if(tagArr && tagArr.length > 0){
+    TAG = payload.TAG.toString();
+  }
+
   const db = new oracleDB();
   await db.getConnection()
       .then(con => {
@@ -236,7 +254,6 @@ router.put('/', async (ctx) => {
         { postId: postId })
         .then(result => {
           con.release();
-          ctx.cookies.set('nsnest_good_bad_info', 'testOQ');
           ctx.body = {
             result: true,
             message: result

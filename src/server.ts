@@ -1,6 +1,8 @@
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
 import * as bodyParser from 'koa-bodyparser';
+// import * as serve from 'koa-static';
+
 import userRouter from './userRouter';
 import postRouter from './postRouter';
 import commentRouter from './commentRouter';
@@ -22,6 +24,8 @@ app.use(bodyParser({
     }
 }));
 
+app.use(require('koa-static')('NSNEST_PUBLIC'));   //파일 정적 라우팅
+
 app.use(async (ctx, next) => {
     try {
         ctx.body = ctx.request.body;
@@ -29,10 +33,11 @@ app.use(async (ctx, next) => {
         
         await next();
     } catch (err) {
-        ctx.status = err.statusCode || err.status || 500;
+        console.error(err.message);
+        // ctx.status = err.statusCode || err.status || 500;
         ctx.body = {
+            result: false,
             message: err.message
-            //에러 페이지
         };
     }
 });
