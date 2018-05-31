@@ -1,23 +1,11 @@
-/* 코맨트 형테
-{
-  commentId: 999999,
-  postId:9999,
-  commentDate: new Date('9/99/99'),
-  studentNum: 99,
-  userId: 9999,
-  userName: "에러",
-  userImg: null,
-  emoticon: null,
-  comment: "코멘트를 불러오지 못하였습니다.",
-  good: 0
-}
-*/
-
 import * as Router from 'koa-router';
 import oracleDB from './oracleDB';
 
 const router = new Router();
-
+const joinUserForm = `SELECT C.COMMENT_ID, C.COMMENT_DATE, U.STUDENT_NUM, C.USER_ID, U.USER_NAME, U.IMAGE, C.EMOTICON, C.GOOD, C.COMMENT_BODY
+FROM COMMENTS C JOIN USERS U 
+ON (C.USER_ID = U.USER_ID)`;
+const registPoint = 2; //댓글 등록 포인트
 /**
  * GET
  */
@@ -29,7 +17,7 @@ router.get('/', async (ctx) => {
   const db = new oracleDB();
   await db.getConnection()
   .then(con => {
-    return con.execute('SELECT * FROM COMMENTS WHERE POST_ID = :postId ORDER BY COMMENT_ID', {postId: postId})
+    return con.execute(`${joinUserForm} WHERE POST_ID = :postId ORDER BY C.COMMENT_ID`, {postId: postId})
     .then(result => {
       ctx.body = result.rows;
       // console.log("[response] : " + ctx.body);
@@ -89,8 +77,8 @@ router.post('/', async (ctx) => {
   
   //코맨트 올리기================================================
   await connection.execute(`INSERT INTO COMMENTS 
-  (COMMENT_BODY, COMMENT_ID, COMMENT_DATE, STUDENT_ID, USER_ID, USER_NAME, USER_IMG, EMOTICON, POST_ID, GOOD) 
-  VALUES (:commentBody, SEQ_COMMENT_ID.NEXTVAL, SYSDATE, 0, :userId, 'testser', '', :commentEmo, :postId, 0)`, 
+  (COMMENT_BODY, COMMENT_ID, COMMENT_DATE, USER_ID, EMOTICON, POST_ID, GOOD) 
+  VALUES (:commentBody, SEQ_COMMENT_ID.NEXTVAL, SYSDATE, :userId, :commentEmo, :postId, 0)`, 
   { commentBody: commentBody, userId: userId, commentEmo: commentEmo, postId: postId })
   .then(result => {
     // console.log("[response1] : " + JSON.stringify(result));
@@ -119,10 +107,11 @@ router.post('/', async (ctx) => {
       message: result
     };
   }, err => {
+    throw err;
+
+  }).catch(err => {
     connection.rollback();
     connection.release();
-    throw err;
-  }).catch(err => {
     ctx.body = {
       result: false,
       message: err.message
@@ -140,29 +129,69 @@ router.delete('/', async (ctx) => {
   const param = ctx.request.query;
   // console.log("[ctx.params] : " + JSON.stringify(param));
   let commentId = param.commentId;
+  let postId = param.postId;
 
   const db = new oracleDB();
-  await db.getConnection()
-      .then(con => {
-        return con.execute(`DELETE FROM COMMENTS WHERE COMMENT_ID = :commentId`, 
-        { commentId: commentId })
-        .then(result => {
-          con.release();
-          ctx.body = {
-            result: true,
-            message: result
-          };
-        }, err => {
-          con.release();
-          throw err;
-        });
-      }).catch(err => {
-        ctx.body = {
-          result: false,
-          message: err.message
-        };
-        console.error("[error] : " + ctx.body);
-      });
+  let connection = await db.getConnection()
+  .then(con => {
+    return con;
+  }).catch(err => {
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + JSON.stringify(ctx.body));
+    return null;
+  });
+
+  if(!connection){
+    //통신 종료
+    return false;
+  }
+
+  //댓글 삭제================================================
+  await connection.execute(`DELETE FROM COMMENTS WHERE COMMENT_ID = :commentId`, 
+  { commentId: commentId })
+  .then(result => {
+    //성공
+  }, err => {
+    throw err;
+
+  }).catch(err => {
+    connection.rollback();
+    connection.release();
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
+  });
+  //================================================================
+
+  //게시글 댓글 수 빼기================================================
+  await connection.execute(`UPDATE POSTS SET 
+  COMMENT_COUNT = COMMENT_COUNT - 1
+  WHERE POST_ID = :postId`, { postId: postId })
+  .then(result => {
+    // console.log("[response2] : " + JSON.stringify(result));
+    connection.release();
+    ctx.body = {
+      result: true,
+      message: result
+    };
+  }, err => {
+    throw err;
+
+  }).catch(err => {
+    connection.rollback();
+    connection.release();
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
+  });
+  //================================================================
 });
 
 export default router.routes();

@@ -3,7 +3,12 @@ import oracleDB from './oracleDB';
 import cognitoJWT from './cognitoJWT';
 
 const router = new Router();
+const joinUserForm = `SELECT P.POST_ID, P.POST_CLASSIFY, U.STUDENT_NUM, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT
+FROM POSTS P JOIN USERS U 
+ON (P.PUBLISHER_ID = U.USER_ID)`;
 const pageRowNum = 10;
+const registPoint = 5; //글 등록 포인트
+const evalPoint = 1; //평가 포인트
 
 /**
  * GET
@@ -22,7 +27,7 @@ router.get('/', async (ctx) => {
     let postId = param['postId'];
     await db.getConnection()
     .then(con => {
-      return con.execute('SELECT * FROM POSTS WHERE POST_ID = :postId', {postId: postId})
+      return con.execute(`${joinUserForm} WHERE P.POST_ID = :postId`, {postId: postId})
       .then(result => {
         ctx.body = result.rows;
         // console.log("[response] : " + ctx.body);
@@ -55,7 +60,7 @@ router.get('/', async (ctx) => {
       let contents = param['contents'];
       await db.getConnection()
       .then(con => {  //TODO:유저 아이디도
-        return con.execute(`SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify AND TITLE LIKE '%${contents}%' ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`
+        return con.execute(`${joinUserForm} WHERE P.POST_CLASSIFY = :classify AND P.TITLE LIKE '%${contents}%' ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`
         , { classify: classify, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
@@ -75,10 +80,10 @@ router.get('/', async (ctx) => {
     } else {  //전체 가져오기
       await db.getConnection()
       .then(con => {
-        var queryStr = `SELECT * FROM POSTS WHERE POST_CLASSIFY = :classify ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`;
+        var queryStr = `${joinUserForm} WHERE P.POST_CLASSIFY = :classify ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`;
         var queryJson = { classify: classify, offset: offset, maxnumrows: pageRowNum };
         if (classify == 0) {  //게시글 종류 상관없이 전부
-          queryStr = `SELECT * FROM POSTS ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`;
+          queryStr = `${joinUserForm} ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`;
           delete queryJson['classify'];
         }
         return con.execute(queryStr, queryJson)
@@ -165,11 +170,11 @@ router.post('/', async (ctx) => {
   }
 
   let classify = payload.postClassify;
-  let studentNum = payload.studentNum;
+  // let studentNum = payload.studentNum;
   let publisherId = payload.publisherId;
-  let publisherName = payload.publisher;
-  let publisherIntro = payload.publisherIntro?payload.publisherIntro:"";
-  let publisherImg = payload.publisherImg?payload.publisherImg:"";
+  // let publisherName = payload.publisher;
+  // let publisherIntro = payload.publisherIntro?payload.publisherIntro:"";
+  // let publisherImg = payload.publisherImg?payload.publisherImg:"";
 
   let images = "";
   let imageArr:string[] = payload.images;
@@ -188,34 +193,70 @@ router.post('/', async (ctx) => {
   }
 
   const db = new oracleDB();
-  await db.getConnection()
-      .then(con => {
-        return con.execute(`INSERT INTO POSTS 
-        (POST_ID, POST_DATE, POST_CLASSIFY, STUDENT_NUM, PUBLISHER_ID, PUBLISHER_NAME, PUBLISHER_INTRO, PUBLISHER_IMG, IMAGES, TITLE, BODY, MARKER, TAG) 
-        VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :studentNum, :publisherId, :publisherName, :publisherIntro, :publisherImg, :images, :title, :body, :MARKER, :TAG)`, 
-        { classify: classify, studentNum: studentNum, publisherId: publisherId, publisherName: publisherName, publisherIntro: publisherIntro, publisherImg: publisherImg, images: images, title: title, body: body, MARKER: MARKER, TAG: TAG })
-        .then(result => {
-          // console.log("[response] : " + JSON.stringify(result));
-          con.release();
-          ctx.body = {
-            result: true,
-            message: result
-          };
-        }, err => {
-          console.error("[error] : " + err.message);
-          con.release();
-          ctx.body = {
-            result: false,
-            message: err.message
-          };
-        });
-      }).catch(err => {
-        ctx.body = {
-          result: false,
-          message: err.message
-        };
-        console.error("[error] : " + ctx.body);
-      });
+  let connection = await db.getConnection()
+  .then(con => {
+    return con;
+  }).catch(err => {
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + JSON.stringify(ctx.body));
+    return null;
+  });
+
+  if(!connection){
+    //통신 종료
+    return false;
+  }
+  
+  //게시글 올리기================================================
+  await connection.execute(`INSERT INTO POSTS 
+  (POST_ID, POST_DATE, POST_CLASSIFY, PUBLISHER_ID, IMAGES, TITLE, BODY, MARKER, TAG) 
+  VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :publisherId, :publisherName, :publisherIntro, :publisherImg, :images, :title, :body, :MARKER, :TAG)`, 
+  { classify: classify, publisherId: publisherId, images: images, title: title, body: body, MARKER: MARKER, TAG: TAG })
+  .then(result => {
+    //성공
+    // console.log("[response] : " + JSON.stringify(result));
+  }, err => {
+    throw err;
+
+  }).catch(err => {
+    connection.rollback();
+    connection.release();
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
+    return false;
+  });
+  //================================================================
+
+  //해당 유저 점수 등록================================================
+  await connection.execute(`UPDATE USERS SET POINT = POINT + ${registPoint} WHERE USER_ID = :userId`, 
+  { userId: publisherId })
+  .then(result => {
+    // console.log("[response2] : " + JSON.stringify(result));
+    connection.release();
+    ctx.body = {
+      result: true,
+      message: result
+    };
+  }, err => {
+    throw err;
+    
+  }).catch(err => {
+    connection.rollback();
+    connection.release();
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
+    return false;
+  });
+  //================================================================
 });
 
 /**
@@ -238,6 +279,7 @@ router.put('/', async (ctx) => {
   }
 
   let postId = payload.postId;
+  let userId = payload.userId;
   let isGood:boolean = payload.isGood;
 
   var goodBadQuery = "BAD = BAD + 1";
@@ -246,29 +288,67 @@ router.put('/', async (ctx) => {
   }
 
   const db = new oracleDB();
-  await db.getConnection()
-      .then(con => {
-        return con.execute('UPDATE POSTS SET '
-        + goodBadQuery + 
-        ' WHERE POST_ID = :postId', 
-        { postId: postId })
-        .then(result => {
-          con.release();
-          ctx.body = {
-            result: true,
-            message: result
-          };
-        }, err => {
-          con.release();
-          throw err;
-        });
-      }).catch(err => {
-        ctx.body = {
-          result: false,
-          message: err.message
-        };
-        console.error("[error] : " + ctx.body);
-      });
+  let connection = await db.getConnection()
+  .then(con => {
+    return con;
+  }).catch(err => {
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + JSON.stringify(ctx.body));
+    return null;
+  });
+
+  if(!connection){
+    //통신 종료
+    return false;
+  }
+  
+  //해당 게시글 평가================================================
+  await connection.execute(`UPDATE POSTS SET ${goodBadQuery} WHERE POST_ID = :postId`, 
+  { postId: postId })
+  .then(result => {
+    //성공
+  }, err => {
+    throw err;
+
+  }).catch(err => {
+    connection.rollback();
+    connection.release();
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
+    return false;
+  });
+  //================================================================
+
+  //해당 유저 점수 등록================================================
+  await connection.execute(`UPDATE USERS SET POINT = POINT + ${evalPoint} WHERE USER_ID = :userId`, 
+  { userId: userId })
+  .then(result => {
+    // console.log("[response2] : " + JSON.stringify(result));
+    connection.release();
+    ctx.body = {
+      result: true,
+      message: result
+    };
+  }, err => {
+    throw err;
+    
+  }).catch(err => {
+    connection.rollback();
+    connection.release();
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
+    return false;
+  });
+  //================================================================
 });
 
 /**
@@ -310,15 +390,17 @@ router.delete('/', async (ctx) => {
     // console.log("[response1] : " + JSON.stringify(result));
     return 0;
   }, err => {
+    throw err;
+
+  }).catch(err => {
     connection.rollback();
     connection.release();
-    throw err;
-  }).catch(err => {
     ctx.body = {
       result: false,
       message: err.message
     };
     console.error("[error] : " + ctx.body);
+    return false;
   });
   //================================================================
 
@@ -333,15 +415,17 @@ router.delete('/', async (ctx) => {
       message: result
     };
   }, err => {
+    throw err;
+
+  }).catch(err => {
     connection.rollback();
     connection.release();
-    throw err;
-  }).catch(err => {
     ctx.body = {
       result: false,
       message: err.message
     };
     console.error("[error] : " + ctx.body);
+    return false;
   });
   //================================================================
 });
