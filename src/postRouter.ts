@@ -48,7 +48,7 @@ router.get('/', async (ctx) => {
     let page = param['page']?param['page']:1;
     let offset:number = (page - 1) * pageRowNum;
 
-    if (sortParam == "id") {  //학번순
+    if (sortParam == "id") {  //게시글 등록순
       sortParam = 1;
     } else if(sortParam == "good") { //좋아요
       sortParam = 11;

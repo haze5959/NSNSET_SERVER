@@ -42,17 +42,17 @@ router.get('/', async (ctx) => {
     });
   } else {  //모든 유저 정보 가져오기
     var sort = param['sort']?param['sort']:'stNum';
-    let count = param['count']?param['count']:5;
+    let count:number = param['count']?param['count']:5;
 
     if (sort == "update") {  //활동순
       sort = 'RECENT_DATE';
     } else {  //잉여 포인트순 rank
       sort = 'POINT';
     }
-
+    console.log("OQ maxRows - " + count);
     await db.getConnection()
     .then(con => {
-      return con.execute('SELECT * FROM USERS ORDER BY :sort desc', {sort: sort}, { maxRows: count })
+      return con.execute('SELECT * FROM USERS ORDER BY :sort desc', { sort: sort }, { maxRows: count })
       .then(result => {
         ctx.body = result.rows;
         console.log("[response] : " + ctx.body);
