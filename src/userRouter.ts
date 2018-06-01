@@ -62,7 +62,10 @@ router.get('/', async (ctx) => {
         throw err;
       });
     }).catch(err => {
-      ctx.body = err.message;
+      ctx.body = {
+        result: false,
+        message: err.message
+      };
       console.error("[error] : " + ctx.body);
     });
   }
