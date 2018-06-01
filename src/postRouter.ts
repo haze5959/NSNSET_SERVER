@@ -3,7 +3,7 @@ import oracleDB from './oracleDB';
 import cognitoJWT from './cognitoJWT';
 
 const router = new Router();
-const joinUserForm = `SELECT P.POST_ID, P.POST_CLASSIFY, U.STUDENT_NUM, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT
+const joinUserForm = `SELECT P.POST_ID, P.POST_CLASSIFY, U.STUDENT_NUM, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.IMAGES, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT
 FROM POSTS P JOIN USERS U 
 ON (P.PUBLISHER_ID = U.USER_ID)`;
 const pageRowNum = 10;
@@ -89,7 +89,7 @@ router.get('/', async (ctx) => {
         return con.execute(queryStr, queryJson)
         .then(result => {
           ctx.body = result.rows;
-          console.log("[response] : " + ctx.body);
+          // console.log("[response] : " + ctx.body);
           con.release();
         }, err => {
           con.release();
