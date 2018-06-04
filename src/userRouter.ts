@@ -18,7 +18,7 @@ router.get('/', async (ctx) => {
       return con.execute('SELECT * FROM USERS WHERE USER_ID = :userId', {userId: userId})
       .then(result => {
         ctx.body = result.rows;
-        console.log("[response] : " + ctx.body);
+        // console.log("[response] : " + ctx.body);
         con.release();
       }, err => {
         con.release();
@@ -43,7 +43,7 @@ router.get('/', async (ctx) => {
       return con.execute('SELECT * FROM USERS ORDER BY :sort desc OFFSET 0 ROWS FETCH NEXT :maxnumrows ROWS ONLY', { sort: sort, maxnumrows: count})
       .then(result => {
         ctx.body = result.rows;
-        console.log("[response] : " + ctx.body);
+        // console.log("[response] : " + ctx.body);
         con.release();
       }, err => {
         con.release();
@@ -57,7 +57,7 @@ router.get('/', async (ctx) => {
 
 });
 
-router.get('cognito/', async (ctx) => {  
+router.get('/cognito', async (ctx) => {  
   const param = ctx.request.query;
   console.log("[ctx.params] : " + JSON.stringify(param));
 
@@ -91,7 +91,7 @@ router.get('cognito/', async (ctx) => {
   .then(result => {
     if(result.rows.length > 0){ //유저가 있다면
       ctx.body = result.rows;
-      console.log("[response] : " + ctx.body);
+      // console.log("[response] : " + ctx.body);
       connection.release();
     } else {  //유저가 없다면 새로 등록한다.
       isExistUser = false;
@@ -112,11 +112,12 @@ router.get('cognito/', async (ctx) => {
     let userName = param['name'];
     let userBirthDay = param['birthDay'];
     let userGender = param['gender'];
+    let studentNum = param['studentNum'];
 
     await connection.execute(`INSERT INTO USERS 
-    (컬럼들......) 
-    VALUES (SEQ_ID.NEXTVAL, SYSDATE,)`,   //TODO TODO!!!!!
-    { userName: userName, userBirthDay: userBirthDay, userGender: userGender })
+    (USER_ID, RECENT_DATE, USER_NAME, USER_INTRO, STUDENT_NUM, IMAGE, SUBIMAGE, POINT, USER_DESC, USER_COGNITO_SUB, BIRTHDAY, GENDER) 
+    VALUES (SEQ_ID.NEXTVAL, SYSDATE, :userName, '', :studentNum, '', '', 0, '', :cognitoSub, :userBirthDay, :userGender)`,
+    { userName: userName, studentNum: studentNum, cognitoSub: cognitoSub, userBirthDay: userBirthDay, userGender: userGender })
     .then(result => {
       console.log("[new user] : " + userName);
       connection.commit();
@@ -136,7 +137,7 @@ router.get('cognito/', async (ctx) => {
     .then(result => {
       if(result.rows.length > 0){ //유저가 있다면
         ctx.body = result.rows;
-        console.log("[response] : " + ctx.body);
+        // console.log("[response] : " + ctx.body);
         connection.release();
       } else {  //유저가 없음
         throw new Error('유저를 찾지 못하였습니다.');

@@ -213,11 +213,11 @@ router.post('/', async (ctx) => {
   //게시글 올리기================================================
   await connection.execute(`INSERT INTO POSTS 
   (POST_ID, POST_DATE, POST_CLASSIFY, PUBLISHER_ID, IMAGES, TITLE, BODY, MARKER, TAG) 
-  VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :publisherId, :publisherName, :publisherIntro, :publisherImg, :images, :title, :body, :MARKER, :TAG)`, 
+  VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :publisherId, :images, :title, :body, :MARKER, :TAG)`, 
   { classify: classify, publisherId: publisherId, images: images, title: title, body: body, MARKER: MARKER, TAG: TAG })
   .then(result => {
     //성공
-    // console.log("[response] : " + JSON.stringify(result));
+    console.log("[새글 등록] : " + JSON.stringify(result));
   }, err => {
     throw err;
 
@@ -228,7 +228,7 @@ router.post('/', async (ctx) => {
       result: false,
       message: err.message
     };
-    console.error("[error] : " + ctx.body);
+    console.error("[error] : " + JSON.stringify(ctx.body));
     return false;
   });
   //================================================================

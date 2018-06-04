@@ -6,7 +6,7 @@ import cognitoJWT from './cognitoJWT';
 
 const router = new Router();
 
-const imagePath = 'NSNEST_PUBLIC/images/elbum/18_06';
+const imagePath = 'NSNEST_PUBLIC/images/elbum';
 
 /**
  * 이미지 등록
@@ -22,7 +22,24 @@ router.post('/elbum', async (ctx, next) => { //토큰 검증
     return false;
   } 
 
-  await next();
+  //폴더 유무 확인
+  if (await !fs.existsSync(imagePath)) {
+    console.log("createFolder ==> " + imagePath);
+    await fx.mkdir(imagePath, 0o777, await function(err) {
+      console.log('OQOQOQO000');
+      if(err){
+        throw err;
+      }
+
+      console.log('OQOQOQO111');
+      next();
+    });
+    console.log('OQOQOQO222');
+    // await next();
+    // await setTimeout(() => next(), 5000); //폴더 만들고 바로 저장시키면 에러가 나와서 딜레이 추가
+  } else {
+    await next();
+  }
 }, koaBody({  //이미지 저장
     formidable:{
       uploadDir: imagePath, // directory where files will be uploaded
