@@ -6,7 +6,7 @@ import cognitoJWT from './cognitoJWT';
 
 const router = new Router();
 
-const imagePath = 'NSNEST_PUBLIC/images/elbum/18_06';
+const imagePath = '/1TB_Drive/NSNEST_PUBLIC/images/elbum/18_06';
 
 /**
  * 이미지 등록
