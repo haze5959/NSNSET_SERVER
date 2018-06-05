@@ -159,7 +159,7 @@ router.get('/cognito', async (ctx) => {
  */
 router.put('/', async (ctx) => {  
   const param = ctx.body;
-  // console.log("[ctx.params] : " + JSON.stringify(param));
+  console.log("[ctx.params] : " + JSON.stringify(param));
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     console.error("토큰 검증 실패");
@@ -173,8 +173,10 @@ router.put('/', async (ctx) => {
     return false;
   }
 
-  let postId = payload.postId;
   let userId = payload.userId;
+  let intro = payload.intro;
+  let description = payload.description;
+  let profileImage = payload.profileImage;
 
   const db = new oracleDB();
   let connection = await db.getConnection()
@@ -194,11 +196,16 @@ router.put('/', async (ctx) => {
     return false;
   }
   
-  //해당 게시글 평가================================================
-  await connection.execute(`UPDATE POSTS SET OOOOOOOOO WHERE POST_ID = :postId`, 
-  { postId: postId })
+  //유저 정보 수정================================================
+  await connection.execute(`UPDATE USERS SET USER_INTRO = :intro, USER_DESC = :description, IMAGE = :profileImage WHERE USER_ID = :userId`, 
+  { userId: userId, intro: intro, description: description, profileImage: profileImage })
   .then(result => {
     //성공
+    connection.release();
+    ctx.body = {
+      result: true,
+      message: result
+    };
   }, err => {
     throw err;
 
@@ -222,8 +229,7 @@ router.delete('/', async (ctx) => {
 
   const param = ctx.request.query;
   // console.log("[ctx.params] : " + JSON.stringify(param));
-  let commentId = param.commentId;
-  let postId = param.postId;
+  let userId = param.userId;
 
   const db = new oracleDB();
   let connection = await db.getConnection()
@@ -243,31 +249,11 @@ router.delete('/', async (ctx) => {
     return false;
   }
 
-  //댓글 삭제================================================
-  await connection.execute(`DELETE FROM COMMENTS WHERE COMMENT_ID = :commentId`, 
-  { commentId: commentId })
+  //유저 삭제================================================
+  await connection.execute(`DELETE FROM USERS WHERE USER_ID = :userId`, 
+  { userId: userId })
   .then(result => {
     //성공
-  }, err => {
-    throw err;
-
-  }).catch(err => {
-    connection.rollback();
-    connection.release();
-    ctx.body = {
-      result: false,
-      message: err.message
-    };
-    console.error("[error] : " + ctx.body);
-  });
-  //================================================================
-
-  //게시글 댓글 수 빼기================================================
-  await connection.execute(`UPDATE POSTS SET 
-  COMMENT_COUNT = COMMENT_COUNT - 1
-  WHERE POST_ID = :postId`, { postId: postId })
-  .then(result => {
-    // console.log("[response2] : " + JSON.stringify(result));
     connection.release();
     ctx.body = {
       result: true,
