@@ -197,7 +197,7 @@ router.put('/', async (ctx) => {
   }
   
   //유저 정보 수정================================================
-  await connection.execute(`UPDATE USERS SET USER_INTRO = :intro, USER_DESC = :description, IMAGE = :profileImage WHERE USER_ID = :userId`, 
+  await connection.execute(`UPDATE USERS SET USER_INTRO = :intro, USER_DESC = :description, IMAGE = :profileImage, RECENT_DATE = SYSDATE WHERE USER_ID = :userId`, 
   { userId: userId, intro: intro, description: description, profileImage: profileImage })
   .then(result => {
     //성공

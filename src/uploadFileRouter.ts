@@ -8,6 +8,7 @@ const router = new Router();
 
 const profilePath = '/1TB_Drive/NSNEST_PUBLIC/images/profile';
 const elbumPath = '/1TB_Drive/NSNEST_PUBLIC/images/elbum/18_06';
+const boardPath = '/1TB_Drive/NSNEST_PUBLIC/images/board/18_06';
 
 /**
  * 앨범 등록
@@ -28,6 +29,43 @@ router.post('/elbum', async (ctx, next) => { //토큰 검증
     formidable:{
       uploadDir: elbumPath, // directory where files will be uploaded
       keepExtensions: true // keep file extension on upload
+    },
+    multipart: true,
+    urlencoded: true,
+    onError: (err, ctx) => {
+      console.error(err.message);
+      ctx.body = {
+        result: false,
+        message: err.message
+      };
+    }
+  }), (ctx) => {  //결과값 리턴
+    ctx.body = {
+      result: true,
+      message: ctx.request.body
+    };
+  }
+);
+
+/**
+ * 게시글 등록
+ */
+router.post('/board', async (ctx, next) => { //토큰 검증
+  const accessToken:string = ctx.request.header.accesstoken;
+  if(!cognitoJWT.check(accessToken?accessToken:'')){  //토큰 검증 실패
+    console.error("토큰 검증 실패");
+    ctx.body = {
+      result: false,
+      message: "토큰 검증 실패"
+    };
+    return false;
+  } 
+
+  await next();
+}, koaBody({  //이미지 저장
+    formidable:{
+      uploadDir: boardPath, 
+      keepExtensions: true 
     },
     multipart: true,
     urlencoded: true,

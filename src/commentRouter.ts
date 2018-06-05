@@ -49,12 +49,9 @@ router.post('/', async (ctx) => {
   }
 
   let postId = payload.postId;
-  // let studentNum = payload.studentNum;
   let userId = payload.userId;
-  // let userName = payload.userName;
-  // let userImg = payload.userImg;
-  let commentEmo = payload.emoticon?payload.emoticon:"";
 
+  let commentEmo = payload.emoticon?payload.emoticon:"";
   let commentBody = payload.comment?payload.comment:"";
   
   const db = new oracleDB();
@@ -101,11 +98,6 @@ router.post('/', async (ctx) => {
   WHERE POST_ID = :postId`, { postId: postId })
   .then(result => {
     // console.log("[response2] : " + JSON.stringify(result));
-    connection.release();
-    ctx.body = {
-      result: true,
-      message: result
-    };
   }, err => {
     throw err;
 
@@ -117,6 +109,31 @@ router.post('/', async (ctx) => {
       message: err.message
     };
     console.error("[error] : " + ctx.body);
+  });
+  //================================================================
+
+  //해당 유저 점수 등록================================================
+  await connection.execute(`UPDATE USERS SET POINT = POINT + ${registPoint}, RECENT_DATE = SYSDATE WHERE USER_ID = :userId`, 
+  { userId: userId })
+  .then(result => {
+    // console.log("[response2] : " + JSON.stringify(result));
+    connection.release();
+    ctx.body = {
+      result: true,
+      message: result
+    };
+  }, err => {
+    throw err;
+    
+  }).catch(err => {
+    connection.rollback();
+    connection.release();
+    ctx.body = {
+      result: false,
+      message: err.message
+    };
+    console.error("[error] : " + ctx.body);
+    return false;
   });
   //================================================================
 });

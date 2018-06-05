@@ -234,7 +234,7 @@ router.post('/', async (ctx) => {
   //================================================================
 
   //해당 유저 점수 등록================================================
-  await connection.execute(`UPDATE USERS SET POINT = POINT + ${registPoint} WHERE USER_ID = :userId`, 
+  await connection.execute(`UPDATE USERS SET POINT = POINT + ${registPoint}, RECENT_DATE = SYSDATE WHERE USER_ID = :userId`, 
   { userId: publisherId })
   .then(result => {
     // console.log("[response2] : " + JSON.stringify(result));
@@ -326,7 +326,7 @@ router.put('/', async (ctx) => {
   //================================================================
 
   //해당 유저 점수 등록================================================
-  await connection.execute(`UPDATE USERS SET POINT = POINT + ${evalPoint} WHERE USER_ID = :userId`, 
+  await connection.execute(`UPDATE USERS SET POINT = POINT + ${evalPoint}, RECENT_DATE = SYSDATE WHERE USER_ID = :userId`, 
   { userId: userId })
   .then(result => {
     // console.log("[response2] : " + JSON.stringify(result));
