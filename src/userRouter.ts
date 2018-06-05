@@ -10,7 +10,7 @@ const router = new Router();
 router.get('/', async (ctx) => {  
   const param = ctx.request.query;
   const db = new oracleDB();
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
   if(param['userId']){ //해당 유저 아이디에 해당하는 유저 정보 가져오기
     let userId = param['userId'];
     await db.getConnection()
@@ -59,7 +59,7 @@ router.get('/', async (ctx) => {
 
 router.get('/cognito', async (ctx) => {  
   const param = ctx.request.query;
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
 
   let cognitoSub = param['cognitoSub'];
   if(!cognitoSub){ 
@@ -159,7 +159,7 @@ router.get('/cognito', async (ctx) => {
  */
 router.put('/', async (ctx) => {  
   const param = ctx.body;
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
   
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     console.error("토큰 검증 실패");
