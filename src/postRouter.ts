@@ -170,21 +170,20 @@ router.post('/', async (ctx) => {
   }
 
   let classify = payload.postClassify;
-  // let studentNum = payload.studentNum;
   let publisherId = payload.publisherId;
-  // let publisherName = payload.publisher;
-  // let publisherIntro = payload.publisherIntro?payload.publisherIntro:"";
-  // let publisherImg = payload.publisherImg?payload.publisherImg:"";
+  let title = payload.title;
+  let body = payload.body?payload.body:"";
 
   let images = "";
   let imageArr:string[] = payload.images;
   if(imageArr && imageArr.length > 0){
     images = imageArr.toString();
   }
-  
-  let title = payload.title;
-  let body = payload.body?payload.body:"";
-  let MARKER = payload.MARKER?payload.MARKER:"";
+
+  let MARKER = "";
+  if(payload.MARKER){
+    MARKER = JSON.stringify(payload.MARKER);
+  }
 
   let TAG = "";
   let tagArr:string[] = payload.TAG;
