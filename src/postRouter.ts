@@ -30,7 +30,7 @@ router.get('/', async (ctx) => {
       return con.execute(`${joinUserForm} WHERE P.POST_ID = :postId`, {postId: postId})
       .then(result => {
         ctx.body = result.rows;
-        // console.log("[response] : " + ctx.body);
+        console.log("[response] : " + ctx.body);
         con.release();
       }, err => {
         con.release();
@@ -182,8 +182,10 @@ router.post('/', async (ctx) => {
 
   let MARKER = "";
   if(payload.MARKER){
+    console.log("OQ1 - " + payload.MARKER);
     MARKER = JSON.stringify(payload.MARKER);
   }
+  console.log("OQ2 - " + MARKER);
 
   let TAG = "";
   let tagArr:string[] = payload.TAG;
