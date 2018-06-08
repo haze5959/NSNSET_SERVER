@@ -30,7 +30,7 @@ router.get('/', async (ctx) => {
       return con.execute(`${joinUserForm} WHERE P.POST_ID = :postId`, {postId: postId})
       .then(result => {
         ctx.body = result.rows;
-        console.log("[response] : " + ctx.body);
+        // console.log("[response] : " + ctx.body);
         con.release();
       }, err => {
         con.release();
@@ -110,7 +110,7 @@ router.get('/pageSize', async (ctx) => {
 
   const param = ctx.request.query;
   const db = new oracleDB();
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
   
   await db.getConnection()
   .then(con => {
@@ -216,7 +216,7 @@ router.post('/', async (ctx) => {
   { classify: classify, publisherId: publisherId, images: images, title: title, body: body, MARKER: MARKER, TAG: TAG })
   .then(result => {
     //성공
-    console.log("[새글 등록] : " + JSON.stringify(result));
+    // console.log("[새글 등록] : " + JSON.stringify(result));
   }, err => {
     throw err;
 

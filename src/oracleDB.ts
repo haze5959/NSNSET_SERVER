@@ -21,7 +21,7 @@ export default class Database {
                 console.log('Connection Pool created!');
             },
             err => {
-                console.log('Error creating pool!');
+                console.error('Error creating pool!');
             });
     }
 

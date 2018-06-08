@@ -29,7 +29,7 @@ app.use(require('koa-static')('/1TB_Drive/NSNEST_PUBLIC'));   //파일 정적 �
 app.use(async (ctx, next) => {
     try {
         ctx.body = ctx.request.body;
-        console.log('[request Url] : ' + ctx.url + " / [request Method] : " + ctx.method);
+        // console.log('[request Url] : ' + ctx.url + " / [request Method] : " + ctx.method);
         
         await next();
     } catch (err) {

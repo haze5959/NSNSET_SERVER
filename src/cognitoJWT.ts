@@ -29,17 +29,17 @@ export default class cognitoJWT {
     const decodedJWT = jwt.decode(jwtToken, {complete: true});
     // reject if its not a valid JWT token
     if(!decodedJWT){
-      console.log("[ValidateToken] err : Not a valid JWT token");
+      console.error("[ValidateToken] err : Not a valid JWT token");
       return false;
     }
     // reject if ISS is not matching our userPool Id
     if(decodedJWT['payload']['iss'] != userPool_Id){
-      console.log("[ValidateToken] err : invalid issuer, iss: " + decodedJWT['payload'])
+      console.error("[ValidateToken] err : invalid issuer, iss: " + decodedJWT['payload'])
       return false;
     }
     // Reject the jwt if it's not an 'Access Token'
     if (decodedJWT['payload']['token_use'] != 'access') {
-          console.log("[ValidateToken] err : Not an access token")
+          console.error("[ValidateToken] err : Not an access token")
           return false;
       }
         // Get jwtToken `kid` from header
@@ -48,7 +48,7 @@ export default class cognitoJWT {
     const pem = pems[kid];
     // if there is no matching pem for this `kid`, reject the token
     if(!pem){
-      console.log('[ValidateToken] err : Invalid access token')
+      console.error('[ValidateToken] err : Invalid access token')
       return false;
     }
 
@@ -56,7 +56,7 @@ export default class cognitoJWT {
     // verify the signature of the JWT token to ensure its really coming from your User Pool
     jwt.verify(jwtToken, pem, {issuer: userPool_Id}, function(err, payload){
       if(err){
-        console.log("Unauthorized signature for this JWT Token")
+        console.error("Unauthorized signature for this JWT Token")
         result = false;
       }else{
         // if payload exists, then the token is verified!

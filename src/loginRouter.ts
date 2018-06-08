@@ -10,7 +10,7 @@ router.get('/', async (ctx) => {
   
   const param = ctx.request.query;
   const db = new oracleDB();
-  console.log("[ctx.params] : " + JSON.stringify(param));
+  // console.log("[ctx.params] : " + JSON.stringify(param));
 
   let userId = param['userId'];
   let userPw = param['userPw'];
