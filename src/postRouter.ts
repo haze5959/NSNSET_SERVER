@@ -181,14 +181,14 @@ router.post('/', async (ctx) => {
   }
 
   let MARKER = "";
-  if(payload.MARKER){
-    console.log("OQ1 - " + payload.MARKER);
-    MARKER = JSON.stringify(payload.MARKER);
+  if(payload.marker){
+    console.log("OQ1 - " + payload.marker);
+    MARKER = JSON.stringify(payload.marker);
   }
   console.log("OQ2 - " + MARKER);
 
   let TAG = "";
-  let tagArr:string[] = payload.TAG;
+  let tagArr:string[] = payload.tag;
   if(tagArr && tagArr.length > 0){
     TAG = payload.TAG.toString();
   }
