@@ -10,13 +10,15 @@ import commentRouter from './commentRouter';
 import uploadFileRouter from './uploadFileRouter';
 import redis from 'redis';
 import oracleDB from './oracleDB';
-
+import * as cors from '@koa/cors';
 
 const app = new Koa();
 // app.keys = ['NSNESTOQ123'];  //변조방지 쿠키키
 app.context.db = {  //서버쪽 프로퍼티
     "version": "1.0.0"
 };
+
+app.use(cors());    //크로스 도메인 허용
 
 app.use(bodyParser({
     onerror: function (err, ctx) {

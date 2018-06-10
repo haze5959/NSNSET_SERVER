@@ -12,6 +12,7 @@
   "author": "OQ",
   "license": "ISC",
   "dependencies": {
+    "@koa/cors": "^2.2.1",
     "@types/jsonwebtoken": "^7.2.7",
     "@types/koa-bodyparser": "^4.2.0",
     "@types/oracledb": "^1.11.34",
