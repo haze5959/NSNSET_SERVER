@@ -40,7 +40,7 @@ router.get('/', async (ctx) => {
 
     await db.getConnection()
     .then(con => {
-      return con.execute(`SELECT * FROM USERS ORDER BY ${param} desc OFFSET 0 ROWS FETCH NEXT :maxnumrows ROWS ONLY`, { maxnumrows: count})
+      return con.execute(`SELECT * FROM USERS ORDER BY ${sort} desc OFFSET 0 ROWS FETCH NEXT :maxnumrows ROWS ONLY`, { maxnumrows: count})
       .then(result => {
         ctx.body = result.rows;
         console.log("[response] : " + ctx.body);
