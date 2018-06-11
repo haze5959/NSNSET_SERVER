@@ -43,7 +43,7 @@ router.get('/', async (ctx) => {
       return con.execute(`SELECT * FROM USERS ORDER BY ${sort} desc OFFSET 0 ROWS FETCH NEXT :maxnumrows ROWS ONLY`, { maxnumrows: count})
       .then(result => {
         ctx.body = result.rows;
-        console.log("[response] : " + ctx.body);
+        // console.log("[response] : " + ctx.body);
         con.release();
       }, err => {
         con.release();

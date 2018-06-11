@@ -109,7 +109,7 @@ router.get('/', async (ctx) => {
   }
 });
 
-router.get('all/', async (ctx) => {  
+router.get('/all', async (ctx) => {  
   const param = ctx.request.query;
   if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
     console.error("토큰 검증 실패");
