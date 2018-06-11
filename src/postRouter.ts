@@ -6,6 +6,9 @@ const router = new Router();
 const joinUserForm = `SELECT P.POST_ID, P.POST_CLASSIFY, U.STUDENT_NUM, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.IMAGES, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT
 FROM POSTS P JOIN USERS U 
 ON (P.PUBLISHER_ID = U.USER_ID)`;
+const joinUserFormForSimple = `SELECT P.POST_ID, P.POST_CLASSIFY, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT
+FROM POSTS P JOIN USERS U 
+ON (P.PUBLISHER_ID = U.USER_ID)`;
 const pageRowNum = 10;
 const registPoint = 5; //글 등록 포인트
 const evalPoint = 1; //평가 포인트
@@ -103,6 +106,74 @@ router.get('/', async (ctx) => {
         console.error("[error] : " + ctx.body);
       });
     }
+  }
+});
+
+router.get('all/', async (ctx) => {  
+  const param = ctx.request.query;
+  if(!cognitoJWT.check(param['accessToken']?param['accessToken']:'')){  //토큰 검증 실패
+    console.error("토큰 검증 실패");
+    ctx.body = "토큰 검증 실패";
+    return false;
+  } 
+  
+  const db = new oracleDB();
+    
+  let classify:number = param['classify']?param['classify']:0;
+  var sortParam = param['sort']?param['sort']:'id';
+  let order = param['order']?param['order']:'asc';
+
+  if (sortParam == "id") {  //게시글 등록순
+    sortParam = 1;
+  } else if(sortParam == "good") { //좋아요
+    sortParam = 11;
+  } else {  //싫어요
+    sortParam = 12;
+  }
+
+  if (param['contents']) {  //게시글 검색일 시
+    let contents = param['contents'];
+    await db.getConnection()
+    .then(con => {  //TODO:유저 아이디도
+      return con.execute(`${joinUserFormForSimple} WHERE P.POST_CLASSIFY = :classify AND P.TITLE LIKE '%${contents}%' ORDER BY ${sortParam} ${order}`
+      , { classify: classify })
+      .then(result => {
+        ctx.body = result.rows;
+        // console.log("[response] : " + ctx.body);
+        con.release();
+      }, err => {
+        con.release();
+        throw err;
+      }).catch(err => {
+        con.release();
+        throw err;
+      });
+    }).catch(err => {
+      ctx.body = err.message;
+      console.error("[error] : " + ctx.body);
+    });
+  } else {  //전체 가져오기
+    await db.getConnection()
+    .then(con => {
+      var queryStr = `${joinUserFormForSimple} WHERE P.POST_CLASSIFY = :classify ORDER BY ${sortParam} ${order}`;
+      var queryJson = { classify: classify };
+    
+      return con.execute(queryStr, queryJson)
+      .then(result => {
+        ctx.body = result.rows;
+        // console.log("[response] : " + ctx.body);
+        con.release();
+      }, err => {
+        con.release();
+        throw err;
+      }).catch(err => {
+        con.release();
+        throw err;
+      });
+    }).catch(err => {
+      ctx.body = err.message;
+      console.error("[error] : " + ctx.body);
+    });
   }
 });
 
