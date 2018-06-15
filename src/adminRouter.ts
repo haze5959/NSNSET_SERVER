@@ -37,18 +37,23 @@ router.post('/emoticon', async (ctx, next) => { //토큰 검증
       };
     }
   }), (ctx) => {  //결과값 리턴
-    const emoticonName:string = ctx.request.header.emoticonname;
-    console.log('OQ emoticonName - ' + emoticonName);
-    var redis = require("redis");
-    let client = redis.createClient(environment.RedisPort, environment.RedisHost);
-    client.sadd(environment.EmoNameSet, emoticonName);
-    console.log('OQ image path - ' + JSON.stringify(ctx.request.body));
-    client.rpush(emoticonName, 'testEmo');
+    if(ctx.request.body.files){
+      const emoticonName:string = ctx.request.header.emoticonname;
+      console.log('OQ emoticonName - ' + emoticonName);
+      var redis = require("redis");
+      let client = redis.createClient(environment.RedisPort, environment.RedisHost);
+      client.sadd(environment.EmoNameSet, emoticonName);
+      console.log('OQ image path - ' + JSON.stringify(ctx.request.body.files.file));
+      client.rpush(emoticonName, ctx.request.body.files.file);
 
-    ctx.body = {
-      result: true,
-      message: ctx.request.body
-    };
+      ctx.body = {
+        result: true
+      };
+    } else {
+      ctx.body = {
+        result: false
+      };
+    }
   }
 );
 
