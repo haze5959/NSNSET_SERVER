@@ -5,7 +5,7 @@ import { environment } from "./json/environment";
 import { relative } from 'path';
 
 const userPool_Id = "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_PzeoW49Lp";
-const adminId = "adminID";
+const adminId = "test111";
 
 export default class cognitoJWT {
 
@@ -33,9 +33,10 @@ export default class cognitoJWT {
 
   static ValidateToken(pems, jwtToken:string, isCheckAdmin:boolean): Boolean {
     const decodedJWT = jwt.decode(jwtToken, {complete: true});
+    // console.log(JSON.stringify(decodedJWT));
     if(isCheckAdmin){ //어드민 체크
-      if(decodedJWT['payload']['user'] != adminId){
-        console.error("[ValidateToken] err : is not admin, iss: " + decodedJWT['payload'])
+      if(decodedJWT['payload']['username'] != adminId){
+        console.error("[ValidateToken] err : is not admin, iss: " + JSON.stringify(decodedJWT['payload']['username']));
         return false;
       }
     }

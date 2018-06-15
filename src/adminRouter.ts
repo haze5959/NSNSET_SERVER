@@ -1,12 +1,10 @@
 import * as Router from 'koa-router';
 import * as koaBody from 'koa-body';
-import * as fs from 'fs';
-import * as fx from 'mkdir-recursive';
+import { environment } from "./json/environment";
+
 import cognitoJWT from './cognitoJWT';
-import redisDB from './redisDB';
 
 const router = new Router();
-
 const emoticonPath = '/1TB_Drive/NSNEST_PUBLIC/images/emoticon';
 
 /**
@@ -39,11 +37,13 @@ router.post('/emoticon', async (ctx, next) => { //토큰 검증
       };
     }
   }), (ctx) => {  //결과값 리턴
-    const emoticonName:string = ctx.request.header.emoticonName;
+    const emoticonName:string = ctx.request.header.emoticonname;
     console.log('OQ emoticonName - ' + emoticonName);
-    const redis = new redisDB();
-    let client = redis.getClient();
-    client.hset();
+    var redis = require("redis");
+    let client = redis.createClient(environment.RedisPort, environment.RedisHost);
+    client.sadd(environment.EmoNameSet, emoticonName);
+    console.log('OQ image path - ' + JSON.stringify(ctx.request.body));
+    client.rpush(emoticonName, 'testEmo');
 
     ctx.body = {
       result: true,

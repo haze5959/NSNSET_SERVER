@@ -1,6 +1,7 @@
 import * as Router from 'koa-router';
 import oracleDB from './oracleDB';
 import cognitoJWT from './cognitoJWT';
+import { environment } from "./json/environment";
 
 const router = new Router();
 const joinUserForm = `SELECT P.POST_ID, P.POST_CLASSIFY, U.STUDENT_NUM, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.IMAGES, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT
@@ -220,22 +221,40 @@ router.get('/pageSize', async (ctx) => {
  * (Redis를 이용)
  */
 router.get('/emoticon', async (ctx) => {  
-  // const db = new oracleDB();
-  // await db.getConnection()
-  // .then(con => {
-  //   return con.execute(`${joinUserForm}`, {postId: postId})
-  //   .then(result => {
-  //     ctx.body = result.rows;
-  //     // console.log("[response] : " + ctx.body);
-  //     con.release();
-  //   }, err => {
-  //     con.release();
-  //     throw err;
-  //   });
-  // }).catch(err => {
-  //   ctx.body = err.message;
-  //   console.error("[error] : " + ctx.body);
-  // });
+  const param = ctx.request.query;
+
+  let type:string = param['type'];
+
+  if(type == 'emoKey'){
+    let emoKeyArr:string[] = [];
+
+    await new Promise((resolve, reject) => {
+      var redis = require("redis");
+      let client = redis.createClient(environment.RedisPort, environment.RedisHost);
+      client.smembers(environment.EmoNameSet, (err, replies) => {
+        emoKeyArr = replies;
+  
+        resolve();
+      });
+    }).then((value) => {
+      ctx.body = emoKeyArr;
+    });
+  } else {
+    var emoArr:string[] = [];
+    await new Promise((resolve, reject) => {
+      let emoKey:string = param['emoKey'];
+      var redis = require("redis");
+      let client = redis.createClient(environment.RedisPort, environment.RedisHost);
+      
+      client.lrange(emoKey, 0, -1, (err, result) => {
+        emoArr = result;
+        resolve();
+      });
+
+    }).then(((value) => {
+      ctx.body = emoArr;
+    }));
+  }
 });
 
 /**

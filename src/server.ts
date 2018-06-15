@@ -1,7 +1,7 @@
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
 import * as bodyParser from 'koa-bodyparser';
-// import * as serve from 'koa-static';
+import { environment } from "./json/environment";
 
 import userRouter from './userRouter';
 import postRouter from './postRouter';
@@ -9,7 +9,6 @@ import commentRouter from './commentRouter';
 import adminRouter from './adminRouter';
 import uploadFileRouter from './uploadFileRouter';
 import oracleDB from './oracleDB';
-import redisDB from './redisDB';
 import * as cors from '@koa/cors';
 
 const app = new Koa();
@@ -48,9 +47,13 @@ app.use(async (ctx, next) => {
 const db = new oracleDB();
 db.createPool();
 //=========================================
-//Redis 세션 연결============================
-const redis = new redisDB();
-redis.createPool();
+//Redis 연결 확인============================
+var redis = require("redis");
+let client = redis.createClient(environment.RedisPort, environment.RedisHost);
+client.on("error", function (err) {
+    console.error("[redis Error] - " + err);
+});
+client.quit();
 //=========================================
 
 const apiRouter = new Router({ prefix: '/api'});

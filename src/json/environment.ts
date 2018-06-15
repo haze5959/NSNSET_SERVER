@@ -9,4 +9,8 @@ export const environment = {
   IdentityPoolId: '',
   UserPoolId: 'ap-northeast-2_PzeoW49Lp',
   ClientId: '7k319206hpp5uleb2gorm1tncj',
+  
+  EmoNameSet: 'emoNameSet',
+  RedisPort: 6379,
+  RedisHost: "192.168.0.2"
 };
