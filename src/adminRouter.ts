@@ -37,6 +37,7 @@ router.post('/emoticon', async (ctx, next) => { //토큰 검증
       };
     }
   }), (ctx) => {  //결과값 리턴
+    console.log(JSON.stringify(ctx.request.body));
     if(ctx.request.body.files){
       const emoticonName:string = ctx.request.header.emoticonname;
       console.log('OQ emoticonName - ' + emoticonName);
@@ -51,7 +52,8 @@ router.post('/emoticon', async (ctx, next) => { //토큰 검증
       };
     } else {
       ctx.body = {
-        result: false
+        result: false,
+        message: "이미지 등록에 실패하였습니다."
       };
     }
   }
