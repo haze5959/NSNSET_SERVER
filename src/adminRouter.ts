@@ -38,19 +38,16 @@ router.post('/emoticon', async (ctx, next) => { //토큰 검증
     }
   }), (ctx) => {  //결과값 리턴
     console.log(JSON.stringify(ctx.request.body));
-    const fileInfo = ctx.request.body.message.files.file;
+    const fileInfo = ctx.request.body.files.file;
     if(fileInfo && fileInfo.path){
       let filePath:string = fileInfo.path;
       filePath = filePath.replace('/1TB_Drive/NSNEST_PUBLIC/', '');
       const fileUrl = environment.fileUrl + filePath;
-      console.log('이미지 업로드 완료 - ' + fileUrl);
       
       const emoticonName:string = ctx.request.header.emoticonname;
-      console.log('OQ emoticonName - ' + emoticonName);
       var redis = require("redis");
       let client = redis.createClient(environment.RedisPort, environment.RedisHost);
       client.sadd(environment.EmoNameSet, emoticonName);
-      console.log('OQ image path - ' + JSON.stringify(fileUrl));
       client.rpush(emoticonName, fileUrl);
 
       ctx.body = {
