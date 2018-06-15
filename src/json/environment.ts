@@ -10,6 +10,7 @@ export const environment = {
   UserPoolId: 'ap-northeast-2_PzeoW49Lp',
   ClientId: '7k319206hpp5uleb2gorm1tncj',
   
+  fileUrl: 'http://nsnest.iptime.org:3000/',
   EmoNameSet: 'emoNameSet',
   RedisPort: 6379,
   RedisHost: "0.0.0.0"
