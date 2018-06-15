@@ -6,10 +6,10 @@ import * as bodyParser from 'koa-bodyparser';
 import userRouter from './userRouter';
 import postRouter from './postRouter';
 import commentRouter from './commentRouter';
-// import loginRouter from './loginRouter';
+import adminRouter from './adminRouter';
 import uploadFileRouter from './uploadFileRouter';
-import redis from 'redis';
 import oracleDB from './oracleDB';
+import redisDB from './redisDB';
 import * as cors from '@koa/cors';
 
 const app = new Koa();
@@ -49,8 +49,8 @@ const db = new oracleDB();
 db.createPool();
 //=========================================
 //Redis 세션 연결============================
-// var client = redis.createClient();
-//var client = redis.createClient(port, host);
+const redis = new redisDB();
+redis.createPool();
 //=========================================
 
 const apiRouter = new Router({ prefix: '/api'});
@@ -58,6 +58,7 @@ apiRouter.use('/users', userRouter);
 apiRouter.use('/posts', postRouter);
 apiRouter.use('/comment', commentRouter);
 apiRouter.use('/file', uploadFileRouter);
+apiRouter.use('/admin', adminRouter);
 app.use(apiRouter.routes());
 
 app.listen(3000);

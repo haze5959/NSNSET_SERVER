@@ -216,6 +216,29 @@ router.get('/pageSize', async (ctx) => {
 });
 
 /**
+ * 이모티콘 가져오기
+ * (Redis를 이용)
+ */
+router.get('/emoticon', async (ctx) => {  
+  // const db = new oracleDB();
+  // await db.getConnection()
+  // .then(con => {
+  //   return con.execute(`${joinUserForm}`, {postId: postId})
+  //   .then(result => {
+  //     ctx.body = result.rows;
+  //     // console.log("[response] : " + ctx.body);
+  //     con.release();
+  //   }, err => {
+  //     con.release();
+  //     throw err;
+  //   });
+  // }).catch(err => {
+  //   ctx.body = err.message;
+  //   console.error("[error] : " + ctx.body);
+  // });
+});
+
+/**
  * POST
  */
 router.post('/', async (ctx) => {  

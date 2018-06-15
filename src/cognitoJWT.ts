@@ -5,9 +5,11 @@ import { environment } from "./json/environment";
 import { relative } from 'path';
 
 const userPool_Id = "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_PzeoW49Lp";
+const adminId = "adminID";
 
 export default class cognitoJWT {
-  static check(userToken:string): Boolean{
+
+  static check(userToken:string, isCheckAdmin?:boolean): Boolean{
     const pems = {};
     for(let i = 0; i<jwt_set.keys.length; i++){
       const jwk = {
@@ -22,11 +24,22 @@ export default class cognitoJWT {
       pems[jwt_set.keys[i].kid] = pem;
     }
     
-    return this.ValidateToken(pems, userToken);
+    if(isCheckAdmin){
+      return this.ValidateToken(pems, userToken, true);
+    } else {
+      return this.ValidateToken(pems, userToken, false);
+    }
   }
 
-  static ValidateToken(pems, jwtToken:string): Boolean{
+  static ValidateToken(pems, jwtToken:string, isCheckAdmin:boolean): Boolean {
     const decodedJWT = jwt.decode(jwtToken, {complete: true});
+    if(isCheckAdmin){ //어드민 체크
+      if(decodedJWT['payload']['user'] != adminId){
+        console.error("[ValidateToken] err : is not admin, iss: " + decodedJWT['payload'])
+        return false;
+      }
+    }
+
     // reject if its not a valid JWT token
     if(!decodedJWT){
       console.error("[ValidateToken] err : Not a valid JWT token");
