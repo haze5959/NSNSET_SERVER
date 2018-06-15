@@ -12,5 +12,5 @@ export const environment = {
   
   EmoNameSet: 'emoNameSet',
   RedisPort: 6379,
-  RedisHost: "192.168.0.2"
+  RedisHost: "0.0.0.0"
 };
