@@ -94,7 +94,7 @@ router.post('/', async (ctx) => {
 
   //게시글 댓글 수 올리기================================================
   await connection.execute(`UPDATE POSTS SET 
-  COMMENT_COUNT = COMMENT_COUNT + 1 AND POST_DATE = SYSDATE
+  COMMENT_COUNT = COMMENT_COUNT + 1, POST_DATE = SYSDATE
   WHERE POST_ID = :postId`, { postId: postId })
   .then(result => {
     // console.log("[response2] : " + JSON.stringify(result));
