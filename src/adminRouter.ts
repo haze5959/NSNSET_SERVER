@@ -45,8 +45,7 @@ router.post('/emoticon', async (ctx, next) => { //토큰 검증
       const fileUrl = environment.fileUrl + filePath;
       
       var emoticonName:string = ctx.request.header.emoticonname;
-      emoticonName = Buffer.from(emoticonName, 'base64').toString('utf8')
-      console.log('OQ - ' + emoticonName)
+      emoticonName = Buffer.from(emoticonName, 'base64').toString('utf8');
 
       var redis = require("redis");
       let client = redis.createClient(environment.RedisPort, environment.RedisHost);
