@@ -54,6 +54,8 @@ router.get('/', async (ctx) => {
 
     if (sortParam == "id") {  //게시글 등록순
       sortParam = 1;
+    } else if(sortParam == "date") { //좋아요
+      sortParam = 13;
     } else if(sortParam == "good") { //좋아요
       sortParam = 11;
     } else {  //싫어요
@@ -126,10 +128,12 @@ router.get('/all', async (ctx) => {
 
   if (sortParam == "id") {  //게시글 등록순
     sortParam = 1;
-  } else if(sortParam == "good") { //좋아요
+  } else if(sortParam == "date") { //좋아요
     sortParam = 11;
+  } else if(sortParam == "good") { //좋아요
+    sortParam = 9;
   } else {  //싫어요
-    sortParam = 12;
+    sortParam = 10;
   }
 
   if (param['contents']) {  //게시글 검색일 시
