@@ -25,7 +25,7 @@ app.use(bodyParser({
     }
 }));
 
-app.use(require('koa-static')('/1TB_Drive/NSNEST_PUBLIC'));   //파일 정적 라우팅
+app.use(require('koa-static')('/1TB_Drive/NSNEST_PUBLIC', { maxage: 31536000 }));   //파일 정적 라우팅(캐시 1년)
 
 app.use(async (ctx, next) => {
     try {
