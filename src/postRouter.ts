@@ -66,7 +66,7 @@ router.get('/', async (ctx) => {
       let contents = param['contents'];
       await db.getConnection()
       .then(con => {  //TODO:유저 아이디도
-        return con.execute(`${joinUserForm} WHERE P.POST_CLASSIFY = :classify AND P.TITLE LIKE '%${contents}%' ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`
+        return con.execute(`${joinUserForm} WHERE P.POST_CLASSIFY = :classify AND (P.TITLE LIKE '%${contents}%' OR U.USER_NAME LIKE '%${contents}%') ORDER BY ${sortParam} ${order} OFFSET :offset ROWS FETCH NEXT :maxnumrows ROWS ONLY`
         , { classify: classify, offset: offset, maxnumrows: pageRowNum })
         .then(result => {
           ctx.body = result.rows;
@@ -140,7 +140,7 @@ router.get('/all', async (ctx) => {
     let contents = param['contents'];
     await db.getConnection()
     .then(con => {  //TODO:유저 아이디도
-      return con.execute(`${joinUserFormForSimple} WHERE P.POST_CLASSIFY = :classify AND P.TITLE LIKE '%${contents}%' ORDER BY ${sortParam} ${order}`
+      return con.execute(`${joinUserFormForSimple} WHERE P.POST_CLASSIFY = :classify AND (P.TITLE LIKE '%${contents}%' OR U.USER_NAME LIKE '%${contents}%') ORDER BY ${sortParam} ${order}`
       , { classify: classify })
       .then(result => {
         ctx.body = result.rows;
