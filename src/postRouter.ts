@@ -4,10 +4,10 @@ import cognitoJWT from './cognitoJWT';
 import { environment } from "./json/environment";
 
 const router = new Router();
-const joinUserForm = `SELECT P.POST_ID, P.POST_CLASSIFY, U.STUDENT_NUM, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.IMAGES, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT
+const joinUserForm = `SELECT P.POST_ID, P.POST_CLASSIFY, U.STUDENT_NUM, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.IMAGES, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT, P.REGIT_DATE
 FROM POSTS P JOIN USERS U 
 ON (P.PUBLISHER_ID = U.USER_ID)`;
-const joinUserFormForSimple = `SELECT P.POST_ID, P.POST_CLASSIFY, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT
+const joinUserFormForSimple = `SELECT P.POST_ID, P.POST_CLASSIFY, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT, P.REGIT_DATE
 FROM POSTS P JOIN USERS U 
 ON (P.PUBLISHER_ID = U.USER_ID)`;
 const pageRowNum = 10;
@@ -328,8 +328,8 @@ router.post('/', async (ctx) => {
   
   //게시글 올리기================================================
   await connection.execute(`INSERT INTO POSTS 
-  (POST_ID, POST_DATE, POST_CLASSIFY, PUBLISHER_ID, IMAGES, TITLE, BODY, MARKER, TAG) 
-  VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :publisherId, :images, :title, :body, :MARKER, :TAG)`, 
+  (POST_ID, POST_DATE, POST_CLASSIFY, PUBLISHER_ID, IMAGES, TITLE, BODY, MARKER, TAG, REGIT_DATE) 
+  VALUES (SEQ_ID.NEXTVAL, SYSDATE, :classify, :publisherId, :images, :title, :body, :MARKER, :TAG, SYSDATE)`, 
   { classify: classify, publisherId: publisherId, images: images, title: title, body: body, MARKER: MARKER, TAG: TAG })
   .then(result => {
     //성공
