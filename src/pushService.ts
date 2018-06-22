@@ -1,6 +1,5 @@
 var FCM = require('fcm-node');
-var serverKey = require('path/to/privatekey.json'); //put the generated private key path here    
-var fcm = new FCM(serverKey);
+var fcm = new FCM('AAAAb4Trr0Y:APA91bFqh9qhQG67dOFWeMx3pqJ3_OW638ZeOGZzOBBFHpUnRHLrQLfnp_DyRNDlx_npQSrq9u0PfACaSElcMaDLyOvunXHr1TENI0C9LHC9Y_GPCgQ9Ir8A2a99IRPs4hj8jT5CCF1B');
 
 export default class FCMClass {
   constructor() {  
