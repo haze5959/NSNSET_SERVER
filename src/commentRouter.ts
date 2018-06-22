@@ -1,5 +1,6 @@
 import * as Router from 'koa-router';
 import oracleDB from './oracleDB';
+import pushService from "./pushService";
 
 const router = new Router();
 const joinUserForm = `SELECT C.COMMENT_ID, C.COMMENT_DATE, U.STUDENT_NUM, C.USER_ID, U.USER_NAME, U.IMAGE, C.EMOTICON, C.GOOD, C.COMMENT_BODY
@@ -122,6 +123,10 @@ router.post('/', async (ctx) => {
       result: true,
       message: result
     };
+
+    //푸시 보내기
+    const push = new pushService();
+    push.sendWithTopic('comment', payload.userName?payload.userName:'', 20);
   }, err => {
     throw err;
     

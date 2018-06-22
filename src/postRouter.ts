@@ -2,6 +2,7 @@ import * as Router from 'koa-router';
 import oracleDB from './oracleDB';
 import cognitoJWT from './cognitoJWT';
 import { environment } from "./json/environment";
+import pushService from "./pushService";
 
 const router = new Router();
 const joinUserForm = `SELECT P.POST_ID, P.POST_CLASSIFY, U.STUDENT_NUM, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.IMAGES, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT, P.REGIT_DATE
@@ -359,6 +360,10 @@ router.post('/', async (ctx) => {
       result: true,
       message: result
     };
+
+    //푸시 보내기
+    const push = new pushService();
+    push.sendWithTopic('all', payload.publisher?payload.publisher:'', 10);
   }, err => {
     throw err;
     
