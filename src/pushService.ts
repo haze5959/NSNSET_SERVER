@@ -35,7 +35,7 @@ export default class FCMClass {
         if (err) {
             console.error("Something has gone wrong! - " + err)
         } else {
-            console.log("Successfully sent with response: ", response)
+            // console.log("Successfully sent with response: ", response)
         }
     })
   }    
