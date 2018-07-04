@@ -10,10 +10,10 @@ export default class FCMClass {
    * @param userName 
    * @param messageType 10: 게시글 / 20: 댓글
    */
-  public sendWithTopic(topic, userName, messageType:number) {
+  public sendWithTopic(topic, userName, messageType:number, toUser?:string) {
     let title = `${userName}님이 게시글을 올렸습니다.`;
     if(messageType == 20){
-      title = `${userName}님이 댓글을 올렸습니다.`;
+      title = `${userName}님이 ${toUser}님의 글에 댓글을 올렸습니다.`;
     }
 
     var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)

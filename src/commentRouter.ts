@@ -43,8 +43,9 @@ router.post('/', async (ctx) => {
   const param = ctx.body;
   // console.log("[ctx.params] : " + JSON.stringify(param));
   const payload = param['payload'];
+  const toUser = param['toUser'];
 
-  if(!payload){
+  if(!payload || !toUser){
     ctx.body = "페이로드가 없습니다.";
     return false;
   }
@@ -126,7 +127,7 @@ router.post('/', async (ctx) => {
 
     //푸시 보내기
     const push = new pushService();
-    push.sendWithTopic('comment', payload.userName?payload.userName:'', 20);
+    push.sendWithTopic('comment', payload.userName?payload.userName:'', 20, toUser);
   }, err => {
     throw err;
     
