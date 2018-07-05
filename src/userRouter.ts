@@ -3,6 +3,7 @@ import oracleDB from './oracleDB';
 import cognitoJWT from './cognitoJWT';
 
 const router = new Router();
+const selectColums = ` USER_NAME, USER_ID, USER_INTRO, STUDENT_NUM, to_char(RECENT_DATE, 'yy/mm/dd hh24:mi'), IMAGE, SUBIMAGE, POINT, USER_DESC, USER_COGNITO_SUB, BIRTHDAY, GENDER`;
 
 /**
  * GET
@@ -15,7 +16,7 @@ router.get('/', async (ctx) => {
     let userId = param['userId'];
     await db.getConnection()
     .then(con => {
-      return con.execute('SELECT * FROM USERS WHERE USER_ID = :userId', {userId: userId})
+      return con.execute(`SELECT ${selectColums} FROM USERS WHERE USER_ID = :userId`, {userId: userId})
       .then(result => {
         ctx.body = result.rows;
         // console.log("[response] : " + ctx.body);
@@ -40,7 +41,7 @@ router.get('/', async (ctx) => {
 
     await db.getConnection()
     .then(con => {
-      return con.execute(`SELECT * FROM USERS ORDER BY ${sort} desc OFFSET 0 ROWS FETCH NEXT :maxnumrows ROWS ONLY`, { maxnumrows: count})
+      return con.execute(`SELECT ${selectColums} FROM USERS ORDER BY ${sort} desc OFFSET 0 ROWS FETCH NEXT :maxnumrows ROWS ONLY`, { maxnumrows: count})
       .then(result => {
         ctx.body = result.rows;
         // console.log("[response] : " + ctx.body);
@@ -87,7 +88,7 @@ router.get('/cognito', async (ctx) => {
 
   let isExistUser = true;
   //유저 검색================================================
-  await connection.execute('SELECT * FROM USERS WHERE USER_COGNITO_SUB = :cognitoSub', { cognitoSub: cognitoSub })
+  await connection.execute(`SELECT ${selectColums} FROM USERS WHERE USER_COGNITO_SUB = :cognitoSub`, { cognitoSub: cognitoSub })
   .then(result => {
     if(result.rows.length > 0){ //유저가 있다면
       ctx.body = result.rows;
@@ -133,7 +134,7 @@ router.get('/cognito', async (ctx) => {
     //================================================================
 
     //유저 검색================================================
-    await connection.execute('SELECT * FROM USERS WHERE USER_COGNITO_SUB = :cognitoSub', { cognitoSub: cognitoSub })
+    await connection.execute(`SELECT ${selectColums} FROM USERS WHERE USER_COGNITO_SUB = :cognitoSub`, { cognitoSub: cognitoSub })
     .then(result => {
       if(result.rows.length > 0){ //유저가 있다면
         ctx.body = result.rows;
