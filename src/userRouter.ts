@@ -3,7 +3,7 @@ import oracleDB from './oracleDB';
 import cognitoJWT from './cognitoJWT';
 
 const router = new Router();
-const selectColums = ` USER_NAME, USER_ID, USER_INTRO, STUDENT_NUM, to_char(RECENT_DATE, 'yy/mm/dd hh24:mi'), IMAGE, SUBIMAGE, POINT, USER_DESC, USER_COGNITO_SUB, BIRTHDAY, GENDER`;
+const selectColums = ` USER_NAME, USER_ID, USER_INTRO, STUDENT_NUM, to_char(RECENT_DATE at time zone 'GMT', 'yy/mm/dd hh24:mi'), IMAGE, SUBIMAGE, POINT, USER_DESC, USER_COGNITO_SUB, BIRTHDAY, GENDER`;
 
 /**
  * GET
