@@ -3,7 +3,7 @@ import oracleDB from './oracleDB';
 import pushService from "./pushService";
 
 const router = new Router();
-const joinUserForm = `SELECT C.COMMENT_ID, to_char(C.COMMENT_DATE at time zone 'GMT', 'yy/mm/dd hh24:mi'), U.STUDENT_NUM, C.USER_ID, U.USER_NAME, U.IMAGE, C.EMOTICON, C.GOOD, C.COMMENT_BODY
+const joinUserForm = `SELECT C.COMMENT_ID, to_char(C.COMMENT_DATE AT TIME ZONE 'UTC', 'yy/mm/dd hh24:mi'), U.STUDENT_NUM, C.USER_ID, U.USER_NAME, U.IMAGE, C.EMOTICON, C.GOOD, C.COMMENT_BODY
 FROM COMMENTS C JOIN USERS U 
 ON (C.USER_ID = U.USER_ID)`;
 const registPoint = 2; //댓글 등록 포인트
