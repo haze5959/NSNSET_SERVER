@@ -35,8 +35,10 @@ router.get('/', async (ctx) => {
 
     if (sort == "update") {  //활동순
       sort = 'RECENT_DATE';
-    } else {  //잉여 포인트순 rank
+    } else if (sort == "rank") {  //잉여 포인트순 rank
       sort = 'POINT';
+    } else {  //생일 순
+      sort = 'BIRTHDAY';
     }
 
     await db.getConnection()
