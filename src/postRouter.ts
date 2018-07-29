@@ -11,7 +11,7 @@ ON (P.PUBLISHER_ID = U.USER_ID)`;
 const joinUserFormForSimple = `SELECT P.POST_ID, P.POST_CLASSIFY, P.PUBLISHER_ID, U.USER_NAME, U.USER_INTRO, U.IMAGE, P.TITLE, P.BODY, P.GOOD, P.BAD, P.POST_DATE, P.MARKER, P.TAG, P.COMMENT_COUNT, to_char(P.REGIT_DATE, 'yy/mm/dd hh24:mi')
 FROM POSTS P JOIN USERS U 
 ON (P.PUBLISHER_ID = U.USER_ID)`;
-const pageRowNum = 10;
+const pageRowNum = 5;
 const registPoint = 5; //글 등록 포인트
 const evalPoint = 1; //평가 포인트
 
